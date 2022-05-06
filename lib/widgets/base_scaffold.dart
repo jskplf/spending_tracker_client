@@ -23,31 +23,39 @@ class BaseScaffold extends StatefulWidget {
 }
 
 class _BaseScaffoldState extends State<BaseScaffold> {
+  int _index = 1; // Start on The transaction screen
+
   @override
   Widget build(BuildContext context) {
-    int _index = 1; // Start on The transaction screen
     return Scaffold(
       appBar: AppBar(
         title: Readable(text: widget.title),
       ),
-      body: InteractiveViewer(child: widget.body),
+      body: widget.body,
+      floatingActionButton: FloatingActionButton(
+        child: Icon(
+          Icons.add_a_photo,
+        ),
+        onPressed: () {
+          Navigator.pushNamed(context, '/camera');
+        },
+      ),
       bottomNavigationBar: BottomNavigationBar(
         onTap: ((value) {
-          int p = _index;
-
           setState(() {
             _index = value;
           });
-
           if (value == 0) {
             /// TODO Go to chart screen
             // Navigator.pushNamed(context, routeName)
 
           } else if (value == 1) {
-            setState(() {
-              _index = value;
-            });
+            /// Go to the transaction view and change the
+            /// active icon of the nav bar
+
             Navigator.pushNamed(context, '/transactions');
+
+            /// Go to the image loading screen
           } else if (value == 2) {
             setState(() {
               _index = value;
