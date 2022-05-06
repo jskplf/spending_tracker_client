@@ -13,6 +13,7 @@ class TransactionView extends StatefulWidget {
 class _TransactionViewState extends State<TransactionView> {
   final List transactions = [
     {
+      'id': 0,
       'description': 'Receipt 1',
       'transaction_category': 'Income',
       'amount': '\$100.00',
@@ -25,6 +26,7 @@ class _TransactionViewState extends State<TransactionView> {
       ],
     },
     {
+      'id': 1,
       'description': 'Receipt 2',
       'transaction_category': 'Expense',
       'amount': '\$100.00',
@@ -145,8 +147,7 @@ class ReadableTile extends StatelessWidget {
             ],
           ),
           onTap: () {
-            print(
-                'Going to the edit screen of Receipt number ${transaction['description']}');
+            Navigator.pushNamed(context, '/receipt', arguments: transaction);
           },
         ),
       ),

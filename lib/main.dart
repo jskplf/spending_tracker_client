@@ -24,6 +24,7 @@ class MyApp extends StatelessWidget {
         '/transactions': (context) => const TransactionView(),
         '/camera': (context) => const ImageLoaderView(),
         '/addTransaction': (context) => const AddTransactionView(),
+        '/receipt': (context) => const ReceiptView(),
         // '/charts'
       },
     );
