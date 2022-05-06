@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:spending_tracker/widgets/widgets.dart';
 
+/// Should be able to insert items in the middle of a list view
+/// Total should always be the last item in the list
+
 class ReceiptView extends StatelessWidget {
   /// Display the contents of a scanned receipt
   final dynamic receipt = null;
@@ -37,13 +40,36 @@ class ReceiptFormView extends StatefulWidget {
 
 class _ReceiptFormViewState extends State<ReceiptFormView> {
   final _formKey = GlobalKey<FormState>();
+
+  /// Generate a form based on these fields
   final fields = [
-    {'description': 'Store Name', 'initialValue': '', 'validator': (value) {}},
-    {'description': 'Address', 'initialValue': '', 'validator': (value) {}},
-    {'description': 'Date', 'initialValue': '', 'validator': (value) {}},
-    {'description': 'Item', 'initialValue': '', 'validator': (value) {}},
-    {'description': 'Item', 'initialValue': '', 'validator': (value) {}},
-    {'description': 'Total', 'initialValue': 100.00, 'validator': (value) {}},
+    {
+      'description': 'Store Name',
+      'initialValue': '',
+      'validator': (value) {},
+    },
+    {
+      'description': 'Address',
+      'suffix': Icon(Icons.gps_fixed),
+      'initialValue': '',
+      'validator': (value) {},
+    },
+    {
+      'description': 'Date',
+      'initialValue': '',
+      'suffix': Icon(Icons.calendar_month),
+      'validator': (value) {},
+    },
+    {
+      'description': 'Item',
+      'initialValue': '',
+      'validator': (value) {},
+    },
+    {
+      'description': 'Total',
+      'initialValue': 100.00,
+      'validator': (value) {},
+    },
   ];
 
   @override
@@ -57,7 +83,6 @@ class _ReceiptFormViewState extends State<ReceiptFormView> {
             BaseTextField(field: fields[0]),
             BaseTextField(field: fields[1]),
             BaseTextField(field: fields[2]),
-            BaseTextField(field: fields[3]),
             BaseTextField(field: fields[4]),
 
             /// A widget that places a large amount of white space between
@@ -77,12 +102,14 @@ class _ReceiptFormViewState extends State<ReceiptFormView> {
 }
 
 class BaseTextField extends StatelessWidget {
+  /// text field that displays error message when the validator does not return
+  /// a string
   const BaseTextField({
     Key? key,
     required this.field,
   }) : super(key: key);
 
-  final Map<String, Object> field;
+  final Map<String, Object?> field;
 
   @override
   Widget build(BuildContext context) {
@@ -91,9 +118,10 @@ class BaseTextField extends StatelessWidget {
       child: TextFormField(
         initialValue: '${field['initialValue']}',
         decoration: InputDecoration(
+          suffix: field['suffix'] != null ? field['suffix'] as Widget : null,
           hintText: '${field['description']}',
           errorText: "Error Invalid ${field['description']}",
-          border: OutlineInputBorder(),
+          border: const OutlineInputBorder(),
         ),
         validator: (value) {
           return null;
