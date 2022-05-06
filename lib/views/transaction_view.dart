@@ -11,57 +11,48 @@ class TransactionView extends StatefulWidget {
 }
 
 class _TransactionViewState extends State<TransactionView> {
+  final List transactions = [
+    {
+      'description': 'Receipt 1',
+      'transaction_category': 'Income',
+      'amount': '\$100.00',
+      'date': '01/01/1000',
+      'items': [
+        {
+          'name': 'Sandwich',
+          'amount': 2.50,
+        }
+      ],
+    },
+    {
+      'description': 'Receipt 2',
+      'transaction_category': 'Expense',
+      'amount': '\$100.00',
+      'date': '01/01/1000',
+      'items': [
+        {
+          'name': 'Sandwich',
+          'amount': 2.50,
+        }
+      ],
+    },
+  ];
   @override
   Widget build(BuildContext context) {
-    return InteractiveViewer(
-      child: BaseScaffold(
-        footer: const [
-          ChartsButton(),
-          CameraButton(),
+    return BaseScaffold(
+      title: 'Your Transactions',
+      body: Column(
+        children: [
+          const Center(
+            child: TransactionFiltersBar(),
+          ),
+
+          /// Display all of the users transactions
+          TransactionListView(
+            transactions: transactions,
+          )
         ],
-        title: 'Your Transactions',
-        body: Column(
-          children: const [
-            Center(
-              child: TransactionFiltersBar(),
-            ),
-
-            /// Display all of the users transactions
-            TransactionListView()
-          ],
-        ),
       ),
-    );
-  }
-}
-
-class ChartsButton extends StatelessWidget {
-  const ChartsButton({Key? key}) : super(key: key);
-
-  /// A button that when clicked sends the user to the ChartsView Screen
-
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      onPressed: () {},
-      icon: const Icon(Icons.compare_arrows),
-    );
-  }
-}
-
-class CameraButton extends StatelessWidget {
-  /// A Button that when clicked sends the user to the ImageLoaderScreen
-  const CameraButton({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      icon: const Icon(Icons.camera),
-      onPressed: () {
-        Navigator.pushNamed(context, '/camera');
-      },
     );
   }
 }
@@ -69,51 +60,96 @@ class CameraButton extends StatelessWidget {
 class TransactionListView extends StatelessWidget {
   /// Displays a list of transactions
   /// These transactions are filterable by Income, Expense and Previous Month
+  /// When a tile is clicked the user is taken to an edit screen for that receipt
+
   const TransactionListView({
+    required this.transactions,
     Key? key,
   }) : super(key: key);
 
+  final transactions;
+
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      shrinkWrap: true,
-      children: const [
-        ListTile(
-          title: Readable(text: 'Transaction 1'),
-          subtitle: Readable(text: 'Expense'),
-          trailing: Readable(text: "\$100.00"),
+    return Flexible(
+      child: Scrollbar(
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            ReadableTile(transaction: transactions[0]),
+            ReadableTile(transaction: transactions[1]),
+            ReadableTile(transaction: transactions[0]),
+            ReadableTile(transaction: transactions[1]),
+            ReadableTile(transaction: transactions[0]),
+            ReadableTile(transaction: transactions[1]),
+            ReadableTile(transaction: transactions[0]),
+            ReadableTile(transaction: transactions[1]),
+            ReadableTile(transaction: transactions[0]),
+            ReadableTile(transaction: transactions[1]),
+            ReadableTile(transaction: transactions[0]),
+            ReadableTile(transaction: transactions[1]),
+            ReadableTile(transaction: transactions[0]),
+            ReadableTile(transaction: transactions[1]),
+            ReadableTile(transaction: transactions[0]),
+            ReadableTile(transaction: transactions[1]),
+            ReadableTile(transaction: transactions[0]),
+            ReadableTile(transaction: transactions[1]),
+            ReadableTile(transaction: transactions[0]),
+            ReadableTile(transaction: transactions[1]),
+          ],
         ),
-        ListTile(
-          title: Readable(text: 'Transaction 1'),
-          subtitle: Readable(text: 'Expense'),
-          trailing: Readable(text: "\$100.00"),
+      ),
+    );
+  }
+}
+
+class ReadableTile extends StatelessWidget {
+  const ReadableTile({
+    Key? key,
+    required this.transaction,
+  }) : super(key: key);
+
+  final transaction;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(
+        8.0,
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(25.0),
+          border: Border.all(
+              width: 5.0,
+
+              /// Change the color of the transaction tile's border depending on
+              /// the type transaction this is
+              /// ```mermaid
+              /// flowChart
+              /// Expense --> Red
+              /// Income --> Green
+              /// ```
+              color: transaction['transaction_category'] == 'Expense'
+                  ? Colors.red
+                  : Colors.green),
         ),
-        ListTile(
-          title: Readable(text: 'Transaction 1'),
-          subtitle: Readable(text: 'Expense'),
-          trailing: Readable(text: "\$100.00"),
+        child: ListTile(
+          title: Readable(text: transaction['description']!),
+          subtitle: Readable(text: transaction['transaction_category']!),
+          trailing: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Readable(text: transaction['amount']!),
+              Readable(text: transaction['date']!)
+            ],
+          ),
+          onTap: () {
+            print(
+                'Going to the edit screen of Receipt number ${transaction['description']}');
+          },
         ),
-        ListTile(
-          title: Readable(text: 'Transaction 1'),
-          subtitle: Readable(text: 'Expense'),
-          trailing: Readable(text: "\$100.00"),
-        ),
-        ListTile(
-          title: Readable(text: 'Transaction 1'),
-          subtitle: Readable(text: 'Expense'),
-          trailing: Readable(text: "\$100.00"),
-        ),
-        ListTile(
-          title: Readable(text: 'Transaction 1'),
-          subtitle: Readable(text: 'Expense'),
-          trailing: Readable(text: "\$100.00"),
-        ),
-        ListTile(
-          title: Readable(text: 'Transaction 1'),
-          subtitle: Readable(text: 'Expense'),
-          trailing: Readable(text: "\$100.00"),
-        ),
-      ],
+      ),
     );
   }
 }
