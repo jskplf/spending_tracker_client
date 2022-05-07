@@ -23,7 +23,7 @@ class _CustomNavBarState extends State<CustomNavBar> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const ChartsView(),
+                builder: (context) => const StackedColGraph(),
               ),
             );
           } else if (value == 1) {
