@@ -19,6 +19,13 @@ class _CustomNavBarState extends State<CustomNavBar> {
         setState(() {
           _index = value;
           if (value == pre) {
+          } else if (value == 0) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ChartsView(),
+              ),
+            );
           } else if (value == 1) {
             Navigator.push(
               context,

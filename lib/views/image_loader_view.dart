@@ -4,7 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:spending_tracker/views/views.dart';
-import 'package:spending_tracker/widgets/base_scaffold.dart';
+import 'package:spending_tracker/widgets/custom_nav_bar.dart';
 import 'package:http/http.dart' as http;
 
 import '../widgets/readable.dart';
