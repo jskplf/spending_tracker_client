@@ -41,19 +41,26 @@ class _TransactionViewState extends State<TransactionView> {
   ];
   @override
   Widget build(BuildContext context) {
-    return BaseScaffold(
-      title: 'Your Transactions',
-      body: Column(
-        children: [
-          const Center(
-            child: TransactionFiltersBar(),
-          ),
+    return Scaffold(
+      appBar: AppBar(
+          title: Readable(
+        text: 'Past Transactions',
+      )),
+      bottomNavigationBar: CustomNavBar(),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            const Center(
+              child: TransactionFiltersBar(),
+            ),
 
-          /// Display all of the users transactions
-          TransactionListView(
-            transactions: transactions,
-          )
-        ],
+            /// Display all of the users transactions
+            TransactionListView(
+              transactions: transactions,
+            )
+          ],
+        ),
       ),
     );
   }
@@ -73,39 +80,42 @@ class TransactionListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Flexible(
-      child: Scrollbar(
-        child: ListView(
-          shrinkWrap: true,
-          children: [
-            ReadableTile(transaction: transactions[0]),
-            ReadableTile(transaction: transactions[1]),
-            ReadableTile(transaction: transactions[0]),
-            ReadableTile(transaction: transactions[1]),
-            ReadableTile(transaction: transactions[0]),
-            ReadableTile(transaction: transactions[1]),
-            ReadableTile(transaction: transactions[0]),
-            ReadableTile(transaction: transactions[1]),
-            ReadableTile(transaction: transactions[0]),
-            ReadableTile(transaction: transactions[1]),
-            ReadableTile(transaction: transactions[0]),
-            ReadableTile(transaction: transactions[1]),
-            ReadableTile(transaction: transactions[0]),
-            ReadableTile(transaction: transactions[1]),
-            ReadableTile(transaction: transactions[0]),
-            ReadableTile(transaction: transactions[1]),
-            ReadableTile(transaction: transactions[0]),
-            ReadableTile(transaction: transactions[1]),
-            ReadableTile(transaction: transactions[0]),
-            ReadableTile(transaction: transactions[1]),
-          ],
-        ),
+    return Expanded(
+      child: ListView(
+        shrinkWrap: true,
+        children: [
+          ReadableTile(transaction: transactions[0]),
+          ReadableTile(transaction: transactions[1]),
+          ReadableTile(transaction: transactions[0]),
+          ReadableTile(transaction: transactions[1]),
+          ReadableTile(transaction: transactions[0]),
+          ReadableTile(transaction: transactions[1]),
+          ReadableTile(transaction: transactions[0]),
+          ReadableTile(transaction: transactions[1]),
+          ReadableTile(transaction: transactions[0]),
+          ReadableTile(transaction: transactions[1]),
+          ReadableTile(transaction: transactions[0]),
+          ReadableTile(transaction: transactions[1]),
+          ReadableTile(transaction: transactions[0]),
+          ReadableTile(transaction: transactions[1]),
+          ReadableTile(transaction: transactions[0]),
+          ReadableTile(transaction: transactions[1]),
+          ReadableTile(transaction: transactions[0]),
+          ReadableTile(transaction: transactions[1]),
+          ReadableTile(transaction: transactions[0]),
+          ReadableTile(transaction: transactions[1]),
+        ],
       ),
     );
   }
 }
 
 class ReadableTile extends StatelessWidget {
+  /// Tile where all text is read when click each part individually
+  /// this means that only the part that tapped will be read
+  /// each tile will send the user to the reciept's detail page
+  ///Tiles have different colors depending on their category type
+
   const ReadableTile({
     Key? key,
     required this.transaction,
@@ -136,19 +146,22 @@ class ReadableTile extends StatelessWidget {
                   ? Colors.red
                   : Colors.green),
         ),
-        child: ListTile(
-          title: Readable(text: transaction['description']!),
-          subtitle: Readable(text: transaction['transaction_category']!),
-          trailing: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Readable(text: transaction['amount']!),
-              Readable(text: transaction['date']!)
-            ],
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ListTile(
+            title: Readable(text: transaction['description']!),
+            subtitle: Readable(text: transaction['transaction_category']!),
+            trailing: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Readable(text: transaction['amount']!),
+                Readable(text: transaction['date']!)
+              ],
+            ),
+            onTap: () {
+              Navigator.pushNamed(context, '/receipt', arguments: transaction);
+            },
           ),
-          onTap: () {
-            Navigator.pushNamed(context, '/receipt', arguments: transaction);
-          },
         ),
       ),
     );

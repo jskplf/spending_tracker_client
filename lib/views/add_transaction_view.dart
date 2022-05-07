@@ -9,9 +9,6 @@ class AddTransactionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const BaseScaffold(
-      title: 'Add A Transaction',
-      body: Text('Not Ready Yet'),
-    );
+    return Text('Not Ready Yet');
   }
 }

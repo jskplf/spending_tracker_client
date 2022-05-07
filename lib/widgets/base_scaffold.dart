@@ -1,78 +1,50 @@
 import 'package:flutter/material.dart';
+import 'package:spending_tracker/views/views.dart';
 
-import 'widgets.dart';
-
-class BaseScaffold extends StatefulWidget {
-  /// This is the scaffold that all screens of the application use
-  /// This ensures that all Screens are fully interactive. This means that
-  /// users will be able to magnify any part of the application
-  /// TODO figure out a quick way to take users out of zoom mode
-  const BaseScaffold({
-    required this.title,
-    required this.body,
-    this.footer,
-    Key? key,
-  }) : super(key: key);
-
-  final String title;
-  final Widget body;
-  final List<Widget>? footer;
+class CustomNavBar extends StatefulWidget {
+  const CustomNavBar({Key? key}) : super(key: key);
 
   @override
-  State<BaseScaffold> createState() => _BaseScaffoldState();
+  State<CustomNavBar> createState() => _CustomNavBarState();
 }
 
-class _BaseScaffoldState extends State<BaseScaffold> {
-  int _index = 1; // Start on The transaction screen
+class _CustomNavBarState extends State<CustomNavBar> {
+  int _index = 1; // index of current window
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Readable(text: widget.title),
-      ),
-      body: widget.body,
-      floatingActionButton: FloatingActionButton(
-        child: Icon(
-          Icons.add_a_photo,
-        ),
-        onPressed: () {
-          Navigator.pushNamed(context, '/camera');
-        },
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        onTap: ((value) {
-          setState(() {
-            _index = value;
-          });
-          if (value == 0) {
-            /// TODO Go to chart screen
-            // Navigator.pushNamed(context, routeName)
-
+    return BottomNavigationBar(
+      onTap: ((value) {
+        int pre = _index;
+        setState(() {
+          _index = value;
+          if (value == pre) {
           } else if (value == 1) {
-            /// Go to the transaction view and change the
-            /// active icon of the nav bar
-
-            Navigator.pushNamed(context, '/transactions');
-
-            /// Go to the image loading screen
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const TransactionView(),
+              ),
+            );
           } else if (value == 2) {
-            setState(() {
-              _index = value;
-            });
-            Navigator.pushNamed(context, '/camera');
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ImageLoaderView(),
+              ),
+            );
           }
-        }),
-        currentIndex: _index,
-        items: const [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.bar_chart_sharp), label: 'My Charts'),
-          BottomNavigationBarItem(
-              label: 'My Receipts', icon: Icon(Icons.receipt)),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.add_a_photo), label: 'New Receipt'),
-        ],
-      ),
+        });
+      }),
+      currentIndex: _index,
+      items: const [
+        BottomNavigationBarItem(
+            icon: Icon(Icons.bar_chart_sharp), label: 'My Charts'),
+        BottomNavigationBarItem(
+            label: 'My Receipts', icon: Icon(Icons.receipt)),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.add_a_photo), label: 'New Receipt'),
+      ],
     );
   }
 }

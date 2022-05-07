@@ -10,8 +10,12 @@ class ReceiptView extends StatelessWidget {
   const ReceiptView({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return BaseScaffold(
-      title: 'View Receipt',
+    return Scaffold(
+      appBar: AppBar(
+        title: Readable(
+          text: 'Edit Receipt Info',
+        ),
+      ),
       body: ReceiptFormView(
         receipt: receipt,
       ),

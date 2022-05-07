@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:spending_tracker/widgets/base_scaffold.dart';
 import './views/views.dart';
 
 void main() {
@@ -23,7 +24,6 @@ class MyApp extends StatelessWidget {
         /// navigate to
         '/transactions': (context) => const TransactionView(),
         '/camera': (context) => const ImageLoaderView(),
-        '/addTransaction': (context) => const AddTransactionView(),
         '/receipt': (context) => const ReceiptView(),
         // '/charts'
       },
