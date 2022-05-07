@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:spending_tracker/views/views.dart';
 
+int _navbarIndex = 1;
+
 class CustomNavBar extends StatefulWidget {
   const CustomNavBar({Key? key}) : super(key: key);
 
@@ -9,41 +11,39 @@ class CustomNavBar extends StatefulWidget {
 }
 
 class _CustomNavBarState extends State<CustomNavBar> {
-  int _index = 1; // index of current window
-
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       onTap: ((value) {
-        int pre = _index;
+        int pre = _navbarIndex;
+        if (value == pre) {
+        } else if (value == 0) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ChartView(),
+            ),
+          );
+        } else if (value == 1) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const TransactionView(),
+            ),
+          );
+        } else if (value == 2) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ImageLoaderView(),
+            ),
+          );
+        }
         setState(() {
-          _index = value;
-          if (value == pre) {
-          } else if (value == 0) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const StackedColGraph(),
-              ),
-            );
-          } else if (value == 1) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const TransactionView(),
-              ),
-            );
-          } else if (value == 2) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const ImageLoaderView(),
-              ),
-            );
-          }
+          _navbarIndex = value;
         });
       }),
-      currentIndex: _index,
+      currentIndex: _navbarIndex,
       items: const [
         BottomNavigationBarItem(
             icon: Icon(Icons.bar_chart_sharp), label: 'My Charts'),

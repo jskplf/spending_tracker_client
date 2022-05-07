@@ -28,7 +28,7 @@ class StackedData {
 /// This screen displays a form that allows the user to input a transaction
 /// It should auto fill any information gleaned from using the OCR software
 /// on the receipt
-class StackedColGraph extends StatelessWidget {
+class ChartView extends StatelessWidget {
   final List<StackedData> chartData = const [
     StackedData('China', 12, 10, 14, 20),
     StackedData('USA', 14, 11, 18, 23),
@@ -151,7 +151,7 @@ class StackedColGraph extends StatelessWidget {
     SplineData(2018, 3.43, 2.1),
   ];
 
-  const StackedColGraph({Key? key}) : super(key: key);
+  const ChartView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

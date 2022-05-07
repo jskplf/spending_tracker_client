@@ -59,7 +59,7 @@ class LoadImageButton extends StatelessWidget {
           //  'POST', Uri.parse('http://localhost:8000/ocr/'));
 
           //var response = await request.send();
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (context) => const ReceiptView(),
