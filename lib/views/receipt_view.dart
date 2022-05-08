@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:spending_tracker/services/storage.dart';
 import 'package:spending_tracker/widgets/widgets.dart';
 
 /// Should be able to insert items in the middle of a list view
@@ -11,9 +12,10 @@ class ReceiptView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       appBar: AppBar(
         title: Readable(
-          text: 'Edit Receipt Info',
+          text: 'Receipt Data',
         ),
       ),
       body: ReceiptFormView(
@@ -45,6 +47,16 @@ class ReceiptFormView extends StatefulWidget {
 class _ReceiptFormViewState extends State<ReceiptFormView> {
   final _formKey = GlobalKey<FormState>();
 
+  dynamic receipt = {
+    'store': '711',
+    'address': 'Somewhere',
+    'date': '2/3/12',
+    'amount': 25.00,
+    'type': 'e',
+    'category': 'Misc',
+    'image_path': null,
+  };
+
   /// Generate a form based on these fields
   final fields = [
     {
@@ -55,6 +67,16 @@ class _ReceiptFormViewState extends State<ReceiptFormView> {
     {
       'description': 'Address',
       'suffix': Icon(Icons.gps_fixed),
+      'initialValue': '',
+      'validator': (value) {},
+    },
+    {
+      'description': 'Type',
+      'initialValue': '',
+      'validator': (value) {},
+    },
+    {
+      'description': 'Category',
       'initialValue': '',
       'validator': (value) {},
     },
@@ -82,23 +104,24 @@ class _ReceiptFormViewState extends State<ReceiptFormView> {
       key: _formKey,
       child: Padding(
         padding: const EdgeInsets.all(12.0),
-        child: Column(
-          children: [
-            BaseTextField(field: fields[0]),
-            BaseTextField(field: fields[1]),
-            BaseTextField(field: fields[2]),
-            BaseTextField(field: fields[4]),
-
-            /// A widget that places a large amount of white space between
-            /// the submit button and the rest of the form
-            const SizedBox(
-              height: 50,
-            ),
-            ElevatedButton(
-              onPressed: () {},
-              child: const Readable(text: "Save Receipt"),
-            ),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            children:
+                fields.map<Widget>((e) => BaseTextField(field: e)).toList() +
+                    [
+                      /// A widget that places a large amount of white space between
+                      /// the submit button and the rest of the form
+                      const SizedBox(
+                        height: 50,
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          saveReceipt(receipt);
+                        },
+                        child: const Readable(text: "Save Receipt"),
+                      ),
+                    ],
+          ),
         ),
       ),
     );

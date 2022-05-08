@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 /// This manages how data is saved int he app
@@ -22,7 +21,7 @@ void saveReceipt(Map receipt) {
   /// Load the current list of receipts
   var box = Hive.box('receipts');
 
-  List original = box.get('receipts');
+  List original = box.get('data');
   original.insert(0, receipt);
-  box.put('receipts', original);
+  box.put('data', original);
 }
