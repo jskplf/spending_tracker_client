@@ -192,7 +192,9 @@ class ReadableTile extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ReceiptView(),
+                  builder: (context) => ReceiptView(
+                    receipt: transaction,
+                  ),
                 ),
               );
             },

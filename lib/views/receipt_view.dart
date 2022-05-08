@@ -7,13 +7,13 @@ import 'package:spending_tracker/widgets/widgets.dart';
 
 class ReceiptView extends StatelessWidget {
   /// Display the contents of a scanned receipt
-  final dynamic receipt = null;
-  const ReceiptView({Key? key}) : super(key: key);
+  final dynamic receipt;
+  const ReceiptView({Key? key, required this.receipt}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Readable(
+        title: const Readable(
           text: 'Receipt Data',
         ),
       ),
@@ -46,59 +46,41 @@ class ReceiptFormView extends StatefulWidget {
 class _ReceiptFormViewState extends State<ReceiptFormView> {
   final _formKey = GlobalKey<FormState>();
 
-  dynamic receipt = {
-    'store': '711',
-    'address': 'Somewhere',
-    'date': '2/3/12',
-    'amount': 25.00,
-    'type': 'e',
-    'category': 'Misc',
-    'image_path': null,
-  };
-
-  /// Generate a form based on these fields
-  final fields = [
-    {
-      'description': 'Store Name',
-      'initialValue': '',
-      'validator': (value) {},
-    },
-    {
-      'description': 'Address',
-      'suffix': Icon(Icons.gps_fixed),
-      'initialValue': '',
-      'validator': (value) {},
-    },
-    {
-      'description': 'Type',
-      'initialValue': '',
-      'validator': (value) {},
-    },
-    {
-      'description': 'Category',
-      'initialValue': '',
-      'validator': (value) {},
-    },
-    {
-      'description': 'Date',
-      'initialValue': '',
-      'suffix': Icon(Icons.calendar_month),
-      'validator': (value) {},
-    },
-    {
-      'description': 'Item',
-      'initialValue': '',
-      'validator': (value) {},
-    },
-    {
-      'description': 'Total',
-      'initialValue': 100.00,
-      'validator': (value) {},
-    },
-  ];
-
   @override
   Widget build(BuildContext context) {
+    dynamic receipt = widget.receipt;
+
+    /// Generate a form based on these fields
+    final fields = [
+      {
+        'description': 'Store Name',
+        'initialValue': receipt['store'] ?? '',
+        'validator': (value) {},
+      },
+      {
+        'description': 'Address',
+        'suffix': const Icon(Icons.gps_fixed),
+        'initialValue': '',
+        'validator': (value) {},
+      },
+      {
+        'description': 'Date',
+        'initialValue': receipt['date'] ?? '',
+        'suffix': const Icon(Icons.calendar_month),
+        'validator': (value) {},
+      },
+      {
+        'description': 'Category',
+        'initialValue': receipt['category'] ?? '',
+        'validator': (value) {},
+      },
+      {
+        'description': 'Total',
+        'initialValue': receipt['total'] ?? '',
+        'validator': (value) {},
+      },
+    ];
+
     return Form(
       key: _formKey,
       child: Padding(
@@ -115,7 +97,9 @@ class _ReceiptFormViewState extends State<ReceiptFormView> {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          saveReceipt(receipt: receipt);
+                          if (_formKey.currentState!.validate()) {
+                            saveReceipt(receipt: receipt);
+                          }
                         },
                         child: const Readable(text: "Save Receipt"),
                       ),
@@ -150,7 +134,12 @@ class BaseTextField extends StatelessWidget {
           border: const OutlineInputBorder(),
         ),
         validator: (value) {
-          return null;
+          var v = value as String;
+          if (v.contains(RegExp('[A-Za-z]'))) {
+            return null;
+          } else {
+            return '';
+          }
         },
       ),
     );

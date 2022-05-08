@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:spending_tracker/services/api.dart';
 import 'package:spending_tracker/services/storage.dart';
 import 'package:spending_tracker/views/views.dart';
 import 'package:spending_tracker/widgets/custom_nav_bar.dart';
@@ -43,20 +44,11 @@ class LoadImageButton extends StatelessWidget {
         FilePickerResult? result = await FilePicker.platform
             .pickFiles(allowMultiple: true, type: FileType.image);
         if (result != null) {
-          List<File> files = result.paths.map((path) => File('$path')).toList();
-          var req = http.MultipartRequest('POST',
-              Uri.parse('https://spendingtracker-ocr.herokuapp.com/ocr/'));
-          var f = http.MultipartFile.fromBytes(
-              'files', await files[0].readAsBytes(),
-              filename: files[0].path.split("/").last);
-          req.files.add(f);
-          var res = await req.send();
-
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => FutureBuilder(
-                future: res.stream.bytesToString(),
+                future: getOCRResults(result),
                 builder: (context, AsyncSnapshot snapshot) {
                   // Checking if future is resolved or not
                   if (snapshot.connectionState == ConnectionState.done) {
@@ -72,9 +64,10 @@ class LoadImageButton extends StatelessWidget {
                     } else if (snapshot.hasData) {
                       // Extracting data from snapshot object
                       final data = snapshot.data;
-                      saveReceipt(receipt: jsonDecode(data));
                       return Center(
-                        child: ReceiptView(),
+                        child: ReceiptView(
+                          receipt: data,
+                        ),
                       );
                     }
                   }
