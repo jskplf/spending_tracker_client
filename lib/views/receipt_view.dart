@@ -12,7 +12,6 @@ class ReceiptView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       appBar: AppBar(
         title: Readable(
           text: 'Receipt Data',
@@ -116,7 +115,7 @@ class _ReceiptFormViewState extends State<ReceiptFormView> {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          saveReceipt(receipt);
+                          saveReceipt(receipt: receipt);
                         },
                         child: const Readable(text: "Save Receipt"),
                       ),

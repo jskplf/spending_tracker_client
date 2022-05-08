@@ -17,20 +17,6 @@ class TransactionView extends StatefulWidget {
 class _TransactionViewState extends State<TransactionView> {
   @override
   Widget build(BuildContext context) {
-    List<dynamic> t = [];
-
-    /// a subset of the users transactions
-    if (currentFilter == 0) {
-      t = getReceipts();
-    } else if (currentFilter == 1) {
-      t = getReceipts()
-          .where((element) => element['transaction_category'] == "e")
-          .toList();
-    } else if (currentFilter == 2) {
-      t = getReceipts()
-          .where((element) => element['transaction_category'] == "i")
-          .toList();
-    }
     return Scaffold(
         appBar: AppBar(
             title: const Readable(
@@ -145,7 +131,9 @@ class TransactionListView extends StatelessWidget {
       child: ListView(
         shrinkWrap: true,
         children: transactions
-            .map<Widget>((e) => ReadableTile(transaction: e))
+            .asMap()
+            .entries
+            .map<Widget>((e) => ReadableTile(index: e.key))
             .toList(),
       ),
     );
@@ -160,13 +148,14 @@ class ReadableTile extends StatelessWidget {
 
   const ReadableTile({
     Key? key,
-    required this.transaction,
+    required this.index,
   }) : super(key: key);
 
-  final dynamic transaction;
+  final int index;
 
   @override
   Widget build(BuildContext context) {
+    var transaction = getReceipt(index);
     return Padding(
       padding: const EdgeInsets.all(
         8.0,
@@ -189,20 +178,21 @@ class ReadableTile extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: ListTile(
-            title: Readable(text: transaction['store']),
-            subtitle: Readable(text: transaction['category']),
+            title: Readable(text: transaction['store'] ?? 'Missing Store'),
+            subtitle: Readable(text: transaction['type'] ?? 'Missing Type'),
             trailing: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Readable(text: '${transaction['amount']}'),
-                Readable(text: transaction['date']!)
+                Readable(
+                    text: '${transaction['amount'] ?? 'Missing Subtotal'}'),
+                Readable(text: transaction['date'] ?? 'Missing Date'),
               ],
             ),
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const ReceiptView(),
+                  builder: (context) => ReceiptView(),
                 ),
               );
             },

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:spending_tracker/services/storage.dart';
 import 'package:spending_tracker/views/views.dart';
 import 'package:spending_tracker/widgets/custom_nav_bar.dart';
 import 'package:http/http.dart' as http;
@@ -49,14 +50,41 @@ class LoadImageButton extends StatelessWidget {
               'files', await files[0].readAsBytes(),
               filename: files[0].path.split("/").last);
           req.files.add(f);
-          // req.fields['files'] = base64Encode(await files[0].readAsBytes());
           var res = await req.send();
-          print(await res.stream.bytesToString());
 
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const ReceiptView(),
+              builder: (context) => FutureBuilder(
+                future: res.stream.bytesToString(),
+                builder: (context, AsyncSnapshot snapshot) {
+                  // Checking if future is resolved or not
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    // If we got an error
+                    if (snapshot.hasError) {
+                      return Center(
+                        child: Text(
+                          '${snapshot.error} occurred',
+                        ),
+                      );
+
+                      // if we got our data
+                    } else if (snapshot.hasData) {
+                      // Extracting data from snapshot object
+                      final data = snapshot.data;
+                      saveReceipt(receipt: jsonDecode(data));
+                      return Center(
+                        child: ReceiptView(),
+                      );
+                    }
+                  }
+
+                  // Displaying LoadingSpinner to indicate waiting state
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
+              ),
             ),
           );
         }

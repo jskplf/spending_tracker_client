@@ -15,13 +15,24 @@ List getReceipts() {
   return out;
 }
 
-void saveReceipt(Map receipt) {
+void saveReceipt({index, receipt}) {
   /// Add a new receipt to the hive box
 
   /// Load the current list of receipts
   var box = Hive.box('receipts');
 
   List original = box.get('data');
-  original.insert(0, receipt);
+  if (index == null) {
+    original.insert(0, receipt);
+  } else {
+    original.remove(index);
+    original.insert(index, receipt);
+  }
   box.put('data', original);
+}
+
+dynamic getReceipt(int index) {
+  var box = Hive.box('receipts');
+  var receipts = box.get('data');
+  return receipts[index];
 }
