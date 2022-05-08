@@ -38,6 +38,7 @@ dependencies:
   file_picker: ^4.5.1 # native file picker for all platforms
   http: ^0.13.4
   syncfusion_flutter_charts: ^20.1.52
+  hive_flutter: ^1.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

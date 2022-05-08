@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:spending_tracker/widgets/custom_nav_bar.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import './views/views.dart';
 
-void main() {
+void main() async {
+  await Hive.initFlutter();
+  var box = await Hive.openBox('receipts');
   runApp(const MyApp());
 }
 

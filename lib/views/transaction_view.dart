@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:spending_tracker/services/storage.dart';
 
 import '../widgets/widgets.dart';
+
+int currentFilter = 0;
 
 class TransactionView extends StatefulWidget {
   /// Show all of the users transaction in spreadsheet like format
@@ -41,12 +44,26 @@ class _TransactionViewState extends State<TransactionView> {
   ];
   @override
   Widget build(BuildContext context) {
+    List<dynamic> t = [];
+
+    /// a subset of the users transactions
+    if (currentFilter == 0) {
+      t = transactions;
+    } else if (currentFilter == 1) {
+      t = transactions
+          .where((element) => element['transaction_category'] == "Expense")
+          .toList();
+    } else if (currentFilter == 2) {
+      t = transactions
+          .where((element) => element['transaction_category'] == "Income")
+          .toList();
+    }
     return Scaffold(
       appBar: AppBar(
-          title: Readable(
+          title: const Readable(
         text: 'Past Transactions',
       )),
-      bottomNavigationBar: CustomNavBar(),
+      bottomNavigationBar: const CustomNavBar(),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -56,9 +73,9 @@ class _TransactionViewState extends State<TransactionView> {
             ),
 
             /// Display all of the users transactions
-            TransactionListView(
-              transactions: transactions,
-            )
+            Text(
+              getReceipts().toString(),
+            ),
           ],
         ),
       ),
@@ -76,35 +93,16 @@ class TransactionListView extends StatelessWidget {
     Key? key,
   }) : super(key: key);
 
-  final transactions;
+  final List<dynamic> transactions;
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: ListView(
         shrinkWrap: true,
-        children: [
-          ReadableTile(transaction: transactions[0]),
-          ReadableTile(transaction: transactions[1]),
-          ReadableTile(transaction: transactions[0]),
-          ReadableTile(transaction: transactions[1]),
-          ReadableTile(transaction: transactions[0]),
-          ReadableTile(transaction: transactions[1]),
-          ReadableTile(transaction: transactions[0]),
-          ReadableTile(transaction: transactions[1]),
-          ReadableTile(transaction: transactions[0]),
-          ReadableTile(transaction: transactions[1]),
-          ReadableTile(transaction: transactions[0]),
-          ReadableTile(transaction: transactions[1]),
-          ReadableTile(transaction: transactions[0]),
-          ReadableTile(transaction: transactions[1]),
-          ReadableTile(transaction: transactions[0]),
-          ReadableTile(transaction: transactions[1]),
-          ReadableTile(transaction: transactions[0]),
-          ReadableTile(transaction: transactions[1]),
-          ReadableTile(transaction: transactions[0]),
-          ReadableTile(transaction: transactions[1]),
-        ],
+        children: transactions
+            .map<Widget>((e) => ReadableTile(transaction: e))
+            .toList(),
       ),
     );
   }
@@ -113,7 +111,7 @@ class TransactionListView extends StatelessWidget {
 class ReadableTile extends StatelessWidget {
   /// Tile where all text is read when click each part individually
   /// this means that only the part that tapped will be read
-  /// each tile will send the user to the reciept's detail page
+  /// each tile will send the user to the receipt's detail page
   ///Tiles have different colors depending on their category type
 
   const ReadableTile({
@@ -121,7 +119,7 @@ class ReadableTile extends StatelessWidget {
     required this.transaction,
   }) : super(key: key);
 
-  final transaction;
+  final dynamic transaction;
 
   @override
   Widget build(BuildContext context) {
@@ -168,12 +166,17 @@ class ReadableTile extends StatelessWidget {
   }
 }
 
-class TransactionFiltersBar extends StatelessWidget {
+class TransactionFiltersBar extends StatefulWidget {
   /// This widget is button bar whose buttons filter the current views transactions
   const TransactionFiltersBar({
     Key? key,
   }) : super(key: key);
 
+  @override
+  State<TransactionFiltersBar> createState() => _TransactionFiltersBarState();
+}
+
+class _TransactionFiltersBarState extends State<TransactionFiltersBar> {
   @override
   Widget build(BuildContext context) {
     return ButtonBar(
@@ -181,23 +184,29 @@ class TransactionFiltersBar extends StatelessWidget {
       children: [
         OutlinedButton(
           onPressed: () {
-            ///TODO filter by previous month
+            setState(() {
+              currentFilter = 0;
+            });
           },
-          child: Text(
-            'Last Month',
+          child: const Readable(
+            text: 'Last Month',
           ),
         ),
         OutlinedButton(
           onPressed: () {
-            /// TODO filter by Only Expenses
+            setState(() {
+              currentFilter = 1;
+            });
           },
-          child: Text('Expenses'),
+          child: const Readable(text: 'Expenses'),
         ),
         OutlinedButton(
           onPressed: () {
-            /// TODO Filter by Income Only
+            setState(() {
+              currentFilter = 2;
+            });
           },
-          child: Text('Income'),
+          child: const Readable(text: 'Income'),
         ),
       ],
     );
