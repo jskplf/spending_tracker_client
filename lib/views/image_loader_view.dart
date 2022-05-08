@@ -43,17 +43,6 @@ class LoadImageButton extends StatelessWidget {
             .pickFiles(allowMultiple: true, type: FileType.image);
         if (result != null) {
           List<File> files = result.paths.map((path) => File('$path')).toList();
-          showDialog(
-            context: context,
-            builder: (context) {
-              return Dialog(
-                child: InteractiveViewer(
-                  child: Image.memory(files[0].readAsBytesSync()),
-                ),
-              );
-            },
-          );
-
           var req = http.MultipartRequest('POST',
               Uri.parse('https://spendingtracker-ocr.herokuapp.com/ocr/'));
           var f = http.MultipartFile.fromBytes(
