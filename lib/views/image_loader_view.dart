@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -17,7 +18,7 @@ class ImageLoaderView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: CustomNavBar(),
-      appBar:  AppBar(
+      appBar: AppBar(
         title: Readable(
           text: 'Load Receipt',
         ),
@@ -55,16 +56,15 @@ class LoadImageButton extends StatelessWidget {
 
           var req = http.MultipartRequest('POST',
               Uri.parse('https://spendingtracker-ocr.herokuapp.com/ocr/'));
-          req.files.add(
-            http.MultipartFile('picture', files[0].readAsBytes().asStream(),
-                files[0].lengthSync(),
-                filename: files[0].path),
-          );
-
+          var f = http.MultipartFile.fromBytes(
+              'files', await files[0].readAsBytes(),
+              filename: files[0].path.split("/").last);
+          req.files.add(f);
+          // req.fields['files'] = base64Encode(await files[0].readAsBytes());
           var res = await req.send();
-          print(res.statusCode);
-          //var response = await request.send();
-          Navigator.pushReplacement(
+          print(await res.stream.bytesToString());
+
+          Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => const ReceiptView(),
