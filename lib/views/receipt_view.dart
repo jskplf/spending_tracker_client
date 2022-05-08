@@ -49,6 +49,7 @@ class _ReceiptFormViewState extends State<ReceiptFormView> {
   @override
   Widget build(BuildContext context) {
     dynamic receipt = widget.receipt;
+    print('$receipt');
 
     /// Generate a form based on these fields
     final fields = [
