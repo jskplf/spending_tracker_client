@@ -55,29 +55,65 @@ class _ReceiptFormViewState extends State<ReceiptFormView> {
       {
         'description': 'Store Name',
         'initialValue': receipt['store'] ?? '',
-        'validator': (value) {},
+        'validator': (String? value) {
+          if (value!.length > 25) {
+            return 'Error: Store name must be less than 25 characters';
+          }
+          if (value.contains(RegExp(r'[0-9]'))) {
+            return 'Error: Store name cannot have any digits';
+          }
+          return value;
+        },
       },
       {
         'description': 'Address',
         'suffix': const Icon(Icons.gps_fixed),
         'initialValue': '',
-        'validator': (value) {},
+        'validator': (String? value) {
+          if (value!.contains(RegExp(r'[A-Za-z0-9\.\s,\-:\n]'))) {
+            return value;
+          } else {
+            if (value.isEmpty) {
+              return null;
+            } else {
+              null;
+            }
+          }
+        },
       },
       {
         'description': 'Date',
         'initialValue': receipt['date'] ?? '',
         'suffix': const Icon(Icons.calendar_month),
-        'validator': (value) {},
+        'validator': (String? value) {
+          if (value!.contains(
+              RegExp(r'^(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[01])/\d{4}'))) {
+            return value;
+          } else {
+            if (value.isEmpty) {
+              return null;
+            }
+          }
+        },
       },
       {
         'description': 'Category',
         'initialValue': receipt['category'] ?? '',
-        'validator': (value) {},
+        'validator': (String? value) {
+          if (value!.length < 15) {
+            return value;
+          }
+        },
       },
       {
         'description': 'Total',
         'initialValue': receipt['total'] ?? '',
-        'validator': (value) {},
+        'validator': (String? value) {
+          if (double.tryParse(value!) == null) {
+            return null;
+          }
+          return value;
+        },
       },
     ];
 
@@ -123,6 +159,7 @@ class BaseTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var validator = field['validator'];
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: TextFormField(
@@ -133,14 +170,7 @@ class BaseTextField extends StatelessWidget {
           errorText: "Error Invalid ${field['description']}",
           border: const OutlineInputBorder(),
         ),
-        validator: (value) {
-          var v = value as String;
-          if (v.contains(RegExp('[A-Za-z]'))) {
-            return null;
-          } else {
-            return '';
-          }
-        },
+        validator: validator as String? Function(String?),
       ),
     );
   }
