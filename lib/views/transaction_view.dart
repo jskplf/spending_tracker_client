@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:spending_tracker/services/storage.dart';
+import 'package:spending_tracker/views/receipt_view.dart';
 
 import '../widgets/widgets.dart';
 
@@ -14,70 +15,113 @@ class TransactionView extends StatefulWidget {
 }
 
 class _TransactionViewState extends State<TransactionView> {
-  final List transactions = [
-    {
-      'id': 0,
-      'description': 'Receipt 1',
-      'transaction_category': 'Income',
-      'amount': '\$100.00',
-      'date': '01/01/1000',
-      'items': [
-        {
-          'name': 'Sandwich',
-          'amount': 2.50,
-        }
-      ],
-    },
-    {
-      'id': 1,
-      'description': 'Receipt 2',
-      'transaction_category': 'Expense',
-      'amount': '\$100.00',
-      'date': '01/01/1000',
-      'items': [
-        {
-          'name': 'Sandwich',
-          'amount': 2.50,
-        }
-      ],
-    },
-  ];
   @override
   Widget build(BuildContext context) {
     List<dynamic> t = [];
 
     /// a subset of the users transactions
     if (currentFilter == 0) {
-      t = transactions;
+      t = getReceipts();
     } else if (currentFilter == 1) {
-      t = transactions
-          .where((element) => element['transaction_category'] == "Expense")
+      t = getReceipts()
+          .where((element) => element['transaction_category'] == "e")
           .toList();
     } else if (currentFilter == 2) {
-      t = transactions
-          .where((element) => element['transaction_category'] == "Income")
+      t = getReceipts()
+          .where((element) => element['transaction_category'] == "i")
           .toList();
     }
     return Scaffold(
-      appBar: AppBar(
-          title: const Readable(
-        text: 'Past Transactions',
-      )),
-      bottomNavigationBar: const CustomNavBar(),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            const Center(
-              child: TransactionFiltersBar(),
-            ),
+        appBar: AppBar(
+            title: const Readable(
+          text: 'My Receipts',
+        )),
+        bottomNavigationBar: const CustomNavBar(),
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            if (constraints.maxWidth < 350) {
+              return SmallMobileTransactionView(t: getReceipts());
+            } else if (constraints.maxWidth < 400) {
+              return MobileTransactionView(t: getReceipts());
+            } else {
+              return DesktopTransactionView(t: getReceipts());
+            }
+          },
+        ));
+  }
+}
 
-            /// Display all of the users transactions
-            Text(
-              getReceipts().toString(),
-            ),
-          ],
-        ),
+class DesktopTransactionView extends StatelessWidget {
+  const DesktopTransactionView({
+    Key? key,
+    required this.t,
+  }) : super(key: key);
+
+  final List t;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          TransactionFiltersBar(),
+          Row(
+            children: [
+              TransactionListView(
+                  transactions:
+                      t.where((element) => element['type'] == 'e').toList()),
+              TransactionListView(
+                  transactions:
+                      t.where((element) => element['type'] == 'i').toList())
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class MobileTransactionView extends StatelessWidget {
+  const MobileTransactionView({
+    Key? key,
+    required this.t,
+  }) : super(key: key);
+
+  final List t;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          const Center(
+            child: TransactionFiltersBar(),
+          ),
+
+          /// Display all of the users transactions
+
+          TransactionListView(transactions: t)
+        ],
+      ),
+    );
+  }
+}
+
+class SmallMobileTransactionView extends StatelessWidget {
+  const SmallMobileTransactionView({
+    Key? key,
+    required this.t,
+  }) : super(key: key);
+
+  final List t;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [TransactionListView(transactions: t)],
       ),
     );
   }
@@ -140,24 +184,27 @@ class ReadableTile extends StatelessWidget {
               /// Expense --> Red
               /// Income --> Green
               /// ```
-              color: transaction['transaction_category'] == 'Expense'
-                  ? Colors.red
-                  : Colors.green),
+              color: transaction['type'] == 'e' ? Colors.red : Colors.green),
         ),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: ListTile(
-            title: Readable(text: transaction['description']!),
-            subtitle: Readable(text: transaction['transaction_category']!),
+            title: Readable(text: transaction['store']),
+            subtitle: Readable(text: transaction['category']),
             trailing: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Readable(text: transaction['amount']!),
+                Readable(text: '${transaction['amount']}'),
                 Readable(text: transaction['date']!)
               ],
             ),
             onTap: () {
-              Navigator.pushNamed(context, '/receipt', arguments: transaction);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ReceiptView(),
+                ),
+              );
             },
           ),
         ),

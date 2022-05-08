@@ -17,12 +17,12 @@ class ImageLoaderView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: CustomNavBar(),
-      appBar: AppBar(
+      appBar:  AppBar(
         title: Readable(
           text: 'Load Receipt',
         ),
       ),
-      body: Center(
+      body: const Center(
         child: LoadImageButton(),
       ),
     );
@@ -52,12 +52,17 @@ class LoadImageButton extends StatelessWidget {
               );
             },
           );
-          //final file = result.files.single;
 
-          /// Use ocr api to find out get some auto fill suggestions
-          //var request = http.MultipartRequest(
-          //  'POST', Uri.parse('http://localhost:8000/ocr/'));
+          var req = http.MultipartRequest('POST',
+              Uri.parse('https://spendingtracker-ocr.herokuapp.com/ocr/'));
+          req.files.add(
+            http.MultipartFile('picture', files[0].readAsBytes().asStream(),
+                files[0].lengthSync(),
+                filename: files[0].path),
+          );
 
+          var res = await req.send();
+          print(res.statusCode);
           //var response = await request.send();
           Navigator.pushReplacement(
             context,
