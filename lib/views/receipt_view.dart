@@ -60,12 +60,9 @@ class _ReceiptFormViewState extends State<ReceiptFormView> {
         'validator': (String? value) {
           if (value!.isEmpty) {
             return null;
-          }
-
-          if (value!.length > 25) {
+          } else if (value.length > 25) {
             return 'Error: Store name must be less than 25 characters';
-          }
-          if (value.contains(RegExp(r'[0-9]'))) {
+          } else if (value.contains(RegExp(r'[0-9]'))) {
             return 'Error: Store name cannot have any digits';
           }
 

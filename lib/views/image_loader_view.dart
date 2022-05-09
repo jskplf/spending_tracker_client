@@ -1,15 +1,8 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'package:spending_tracker/models/receipt.dart';
 import 'package:spending_tracker/services/api.dart';
-import 'package:spending_tracker/services/storage.dart';
 import 'package:spending_tracker/views/views.dart';
 import 'package:spending_tracker/widgets/custom_nav_bar.dart';
-import 'package:http/http.dart' as http;
 
 import '../widgets/readable.dart';
 
@@ -20,34 +13,24 @@ class ImageLoaderView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: CustomNavBar(),
+      bottomNavigationBar: const CustomNavBar(),
       appBar: AppBar(
-        title: Readable(
+        title: const Readable(
           text: 'Load Receipt',
         ),
       ),
-      body: LayoutBuilder(builder: (context, constraints) {
-        if (constraints.maxWidth < 350) {
-          return Center(
-            child: LoadImageButton(),
-          );
-        }
-        return Row(
-          children: [
-            LoadImageButton(),
-            Expanded(
-              child: ReceiptFormView(
-                receipt: ReceiptModel.empty(),
-              ),
-            ),
-          ],
-        );
-      }),
+      body: const Center(
+        child: LoadImageButton(),
+      ),
     );
   }
 }
 
 class LoadImageButton extends StatelessWidget {
+  /// Opens a native os file picker, uploads the image the user selects to the
+  /// OCR server and waits for the results to be sent back. Once the results are
+  /// received the app displays the receipt edit form with some fields autofilled
+  /// with the ocr results
   const LoadImageButton({
     Key? key,
   }) : super(key: key);
@@ -57,7 +40,7 @@ class LoadImageButton extends StatelessWidget {
     return TextButton(
       onPressed: () async {
         FilePickerResult? result = await FilePicker.platform
-            .pickFiles(allowMultiple: true, type: FileType.image);
+            .pickFiles(allowMultiple: false, type: FileType.image);
         if (result != null) {
           Navigator.push(
             context,
@@ -89,7 +72,9 @@ class LoadImageButton extends StatelessWidget {
 
                   // Displaying LoadingSpinner to indicate waiting state
                   return const Center(
-                    child: CircularProgressIndicator(),
+                    child: CircularProgressIndicator(
+                      semanticsLabel: 'Loading OCR Results',
+                    ),
                   );
                 },
               ),
