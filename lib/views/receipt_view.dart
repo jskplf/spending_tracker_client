@@ -58,12 +58,17 @@ class _ReceiptFormViewState extends State<ReceiptFormView> {
         'description': 'Store Name',
         'initialValue': receipt.store ?? '',
         'validator': (String? value) {
+          if (value!.isEmpty) {
+            return null;
+          }
+
           if (value!.length > 25) {
             return 'Error: Store name must be less than 25 characters';
           }
           if (value.contains(RegExp(r'[0-9]'))) {
             return 'Error: Store name cannot have any digits';
           }
+
           return value;
         },
       },
@@ -76,9 +81,9 @@ class _ReceiptFormViewState extends State<ReceiptFormView> {
             return value;
           } else {
             if (value.isEmpty) {
-              return null;
+              return "";
             } else {
-              null;
+              return null;
             }
           }
         },
