@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:spending_tracker/models/receipt.dart';
 import 'package:spending_tracker/services/api.dart';
 import 'package:spending_tracker/services/storage.dart';
 import 'package:spending_tracker/views/views.dart';
@@ -25,9 +26,23 @@ class ImageLoaderView extends StatelessWidget {
           text: 'Load Receipt',
         ),
       ),
-      body: const Center(
-        child: LoadImageButton(),
-      ),
+      body: LayoutBuilder(builder: (context, constraints) {
+        if (constraints.maxWidth < 350) {
+          return Center(
+            child: LoadImageButton(),
+          );
+        }
+        return Row(
+          children: [
+            LoadImageButton(),
+            Expanded(
+              child: ReceiptFormView(
+                receipt: ReceiptModel.empty(),
+              ),
+            ),
+          ],
+        );
+      }),
     );
   }
 }

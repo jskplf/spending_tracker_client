@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 
+import '../models/receipt.dart';
+
 /// This is the OCR API client
 /// it has methods to connect to the fastapi endpoints of the api
 Future<dynamic> getFakeRequest() async {
@@ -14,7 +16,7 @@ Future<dynamic> getFakeRequest() async {
 }
 
 /// Take a list of files and use the OCR Api to process them, return the results
-Future<dynamic> getOCRResults(result) async {
+Future<ReceiptModel> getOCRResults(result) async {
   List<File> files = result.paths.map<File>((path) => File('$path')).toList();
   var req = http.MultipartRequest(
       'POST', Uri.parse('https://spendingtracker-ocr.herokuapp.com/ocr/'));
@@ -22,5 +24,6 @@ Future<dynamic> getOCRResults(result) async {
       filename: files[0].path.split("/").last);
   req.files.add(f);
   var res = await req.send();
-  return jsonDecode(await res.stream.bytesToString());
+  var json = jsonDecode(await res.stream.bytesToString());
+  return ReceiptModel.fromJson(json);
 }

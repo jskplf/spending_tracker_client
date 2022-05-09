@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:spending_tracker/models/receipt.dart';
 import 'package:spending_tracker/services/storage.dart';
 import 'package:spending_tracker/widgets/widgets.dart';
 
@@ -55,7 +56,7 @@ class _ReceiptFormViewState extends State<ReceiptFormView> {
     final fields = [
       {
         'description': 'Store Name',
-        'initialValue': receipt['store'] ?? '',
+        'initialValue': receipt.store ?? '',
         'validator': (String? value) {
           if (value!.length > 25) {
             return 'Error: Store name must be less than 25 characters';
@@ -69,7 +70,7 @@ class _ReceiptFormViewState extends State<ReceiptFormView> {
       {
         'description': 'Address',
         'suffix': const Icon(Icons.gps_fixed),
-        'initialValue': '',
+        'initialValue': receipt.address ?? '',
         'validator': (String? value) {
           if (value!.contains(RegExp(r'[A-Za-z0-9\.\s,\-:\n]'))) {
             return value;
@@ -84,7 +85,7 @@ class _ReceiptFormViewState extends State<ReceiptFormView> {
       },
       {
         'description': 'Date',
-        'initialValue': receipt['date'] ?? '',
+        'initialValue': receipt.date ?? '',
         'suffix': const Icon(Icons.calendar_month),
         'validator': (String? value) {
           if (value!.contains(
@@ -99,7 +100,7 @@ class _ReceiptFormViewState extends State<ReceiptFormView> {
       },
       {
         'description': 'Category',
-        'initialValue': receipt['category'] ?? '',
+        'initialValue': receipt.category ?? '',
         'validator': (String? value) {
           if (value!.length < 15) {
             return value;
@@ -108,7 +109,7 @@ class _ReceiptFormViewState extends State<ReceiptFormView> {
       },
       {
         'description': 'Total',
-        'initialValue': receipt['total'] ?? '',
+        'initialValue': receipt.total ?? '',
         'validator': (String? value) {
           if (double.tryParse(value!) == null) {
             return null;
