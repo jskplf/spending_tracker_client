@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:spending_tracker/widgets/widgets.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-int graphIndex = 2;
+ValueNotifier<int> graphIndex = ValueNotifier(0);
 
 class HistoData {
   const HistoData(this.y);
@@ -155,7 +155,6 @@ class ChartView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int index = 0;
     final graphs = [
       /// Spline Chart
       SfCartesianChart(
@@ -218,61 +217,51 @@ class ChartView extends StatelessWidget {
           SizedBox(
             height: 8.0,
           ),
-          GraphChooser(),
+          GraphView(),
           SizedBox(
             height: 10.0,
           ),
-          graphs[graphIndex],
+          ValueListenableBuilder(
+              valueListenable: graphIndex,
+              builder: (context, value, child) => graphs[graphIndex.value]),
         ],
       ),
     );
   }
 }
 
-class GraphChooser extends StatefulWidget {
-  /// Select which graph should be displayed
-  const GraphChooser({
-    Key? key,
-  }) : super(key: key);
+class GraphView extends StatelessWidget {
+  const GraphView({Key? key}) : super(key: key);
 
-  @override
-  State<GraphChooser> createState() => _GraphChooserState();
-}
-
-class _GraphChooserState extends State<GraphChooser> {
-  int selected = 1;
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          OutlinedButton(
-            onPressed: () {
-              setState(() {
-                graphIndex = 0;
-              });
-            },
-            child: Readable(text: 'Spline Graph'),
-          ),
-          OutlinedButton(
-            onPressed: () {
-              setState(() {
-                graphIndex = 1;
-              });
-            },
-            child: Readable(text: 'Stacked Graph'),
-          ),
-          OutlinedButton(
-            onPressed: () {
-              setState(() {
-                graphIndex = 2;
-              });
-            },
-            child: Readable(text: 'Range Chart'),
-          ),
-        ],
+    return ValueListenableBuilder(
+      valueListenable: graphIndex,
+      builder: (context, value, child) => Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            OutlinedButton(
+              onPressed: () {
+                graphIndex.value = 0;
+              },
+              child: const Readable(text: 'Spline Graph'),
+            ),
+            OutlinedButton(
+              onPressed: () {
+                graphIndex.value = 1;
+              },
+              child: const Readable(text: 'Stacked Graph'),
+            ),
+            OutlinedButton(
+              onPressed: () {
+                graphIndex.value = 2;
+              },
+              child: const Readable(text: 'Range Chart'),
+            ),
+          ],
+        ),
       ),
     );
   }

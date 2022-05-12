@@ -2,19 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:spending_tracker/services/storage.dart';
 import 'package:spending_tracker/views/receipt_view.dart';
 
+import '../models/receipt.dart';
 import '../widgets/widgets.dart';
 
 int currentFilter = 0;
 
-class TransactionView extends StatefulWidget {
+class ReceiptListView extends StatefulWidget {
   /// Show all of the users transaction in spreadsheet like format
-  const TransactionView({Key? key}) : super(key: key);
+  const ReceiptListView({Key? key}) : super(key: key);
 
   @override
-  State<TransactionView> createState() => _TransactionViewState();
+  State<ReceiptListView> createState() => _ReceiptListViewState();
 }
 
-class _TransactionViewState extends State<TransactionView> {
+class _ReceiptListViewState extends State<ReceiptListView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,57 +24,17 @@ class _TransactionViewState extends State<TransactionView> {
           text: 'My Receipts',
         )),
         bottomNavigationBar: const CustomNavBar(),
-        body: LayoutBuilder(
-          builder: (context, constraints) {
-            if (constraints.maxWidth < 350) {
-              return SmallMobileTransactionView(t: getReceipts());
-            } else if (constraints.maxWidth < 400) {
-              return MobileTransactionView(t: getReceipts());
-            } else {
-              return DesktopTransactionView(t: getReceipts());
-            }
-          },
-        ));
+        body: ReceiptList(r: []));
   }
 }
 
-class DesktopTransactionView extends StatelessWidget {
-  const DesktopTransactionView({
+class ReceiptList extends StatelessWidget {
+  const ReceiptList({
     Key? key,
-    required this.t,
+    required this.r,
   }) : super(key: key);
 
-  final List t;
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          TransactionFiltersBar(),
-          Row(
-            children: [
-              TransactionListView(
-                  transactions:
-                      t.where((element) => element['type'] == 'e').toList()),
-              TransactionListView(
-                  transactions:
-                      t.where((element) => element['type'] == 'i').toList())
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class MobileTransactionView extends StatelessWidget {
-  const MobileTransactionView({
-    Key? key,
-    required this.t,
-  }) : super(key: key);
-
-  final List t;
+  final List r;
 
   @override
   Widget build(BuildContext context) {
@@ -87,54 +48,16 @@ class MobileTransactionView extends StatelessWidget {
 
           /// Display all of the users transactions
 
-          TransactionListView(transactions: t)
+          Expanded(
+              child: ListView(
+            shrinkWrap: true,
+            children: r
+                .asMap()
+                .entries
+                .map<Widget>((e) => ReadableTile(receipt: e.value))
+                .toList(),
+          ))
         ],
-      ),
-    );
-  }
-}
-
-class SmallMobileTransactionView extends StatelessWidget {
-  const SmallMobileTransactionView({
-    Key? key,
-    required this.t,
-  }) : super(key: key);
-
-  final List t;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        children: [TransactionListView(transactions: t)],
-      ),
-    );
-  }
-}
-
-class TransactionListView extends StatelessWidget {
-  /// Displays a list of transactions
-  /// These transactions are filterable by Income, Expense and Previous Month
-  /// When a tile is clicked the user is taken to an edit screen for that receipt
-
-  const TransactionListView({
-    required this.transactions,
-    Key? key,
-  }) : super(key: key);
-
-  final List<dynamic> transactions;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: ListView(
-        shrinkWrap: true,
-        children: transactions
-            .asMap()
-            .entries
-            .map<Widget>((e) => ReadableTile(index: e.key))
-            .toList(),
       ),
     );
   }
@@ -148,14 +71,13 @@ class ReadableTile extends StatelessWidget {
 
   const ReadableTile({
     Key? key,
-    required this.index,
+    required this.receipt,
   }) : super(key: key);
 
-  final int index;
+  final ReceiptModel receipt;
 
   @override
   Widget build(BuildContext context) {
-    var transaction = getReceipt(index);
     return Padding(
       padding: const EdgeInsets.all(
         8.0,
@@ -173,19 +95,18 @@ class ReadableTile extends StatelessWidget {
               /// Expense --> Red
               /// Income --> Green
               /// ```
-              color: transaction['type'] == 'e' ? Colors.red : Colors.green),
+              color: receipt.category == 'e' ? Colors.red : Colors.green),
         ),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: ListTile(
-            title: Readable(text: transaction['store'] ?? 'Missing Store'),
-            subtitle: Readable(text: transaction['type'] ?? 'Missing Type'),
+            title: Readable(text: receipt.store ?? 'Missing Store'),
+            subtitle: Readable(text: receipt.category ?? 'Missing Category'),
             trailing: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Readable(
-                    text: '${transaction['amount'] ?? 'Missing Subtotal'}'),
-                Readable(text: transaction['date'] ?? 'Missing Date'),
+                Readable(text: receipt.total ?? 'Missing Subtotal'),
+                Readable(text: receipt.date ?? 'Missing Date'),
               ],
             ),
             onTap: () {
@@ -193,7 +114,7 @@ class ReadableTile extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) => ReceiptView(
-                    receipt: transaction,
+                    receipt: receipt,
                   ),
                 ),
               );

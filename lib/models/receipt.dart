@@ -1,32 +1,42 @@
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 /// The receipt Model
-/// it extends the Hive model class and inherits the save and delete methods
-/// it has json serializers
-@HiveType(typeId: 0)
-class ReceiptModel extends HiveObject {
-  @HiveField(0)
-  String? store;
+/// It can be serialized to and from JSON
+/// It extends value notifier, therefore all of its fields emit onChanged events
+/// all setters have a call to notifyListeners() which lets any widget that is
+/// using a valueListenableBuilder to watch the values of that there are changes
+/// that need to be updated
+/// Note that the rawText field does not have a setter
+class ReceiptModel extends ChangeNotifier {
+  dynamic store;
 
-  @HiveField(1)
-  String? address;
+  dynamic address;
 
-  @HiveField(2)
-  DateTime? date;
+  dynamic date;
 
-  @HiveField(3)
-  double? total;
+  dynamic total;
 
-  @HiveField(4)
-  String? category;
+  dynamic category;
+
+  dynamic rawText;
 
   ReceiptModel.empty();
+
+  ReceiptModel(
+      {this.store,
+      this.address,
+      this.date,
+      this.total,
+      this.category,
+      this.rawText});
 
   ReceiptModel.fromJson(Map<String, dynamic> json)
       : store = json['store'],
         address = json['address'],
         date = json['date'],
-        total = json['total'];
+        total = json['total'],
+        rawText = json['raw_text'];
 
   Map<String, dynamic> toJson() => {
         'store': store,
@@ -34,5 +44,32 @@ class ReceiptModel extends HiveObject {
         'date': date,
         'total': total,
         'category': category,
+        'rawText': rawText,
       };
+
+  void setStore(String newName) {
+    /// Let all listeners know that the value of name has changed for this receipt
+    store = newName;
+    notifyListeners();
+  }
+
+  void setAddress(String newAddress) {
+    address = newAddress;
+    notifyListeners();
+  }
+
+  void setDate(dynamic newDate) {
+    newDate = newDate;
+    notifyListeners();
+  }
+
+  void setTotal(dynamic newTotal) {
+    total = newTotal;
+    notifyListeners();
+  }
+
+  void setCategory(dynamic newCategory) {
+    category = newCategory;
+    notifyListeners();
+  }
 }

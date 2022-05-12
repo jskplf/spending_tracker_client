@@ -5,7 +5,8 @@ import 'package:http/http.dart' as http;
 import '../models/receipt.dart';
 
 /// This is the OCR API client
-/// it has methods to connect to the fastapi endpoints of the api
+/// it simulates a network request by putting the thread to sleep for 4 seconds
+/// it returns a [Future<Map>] with a key value pair of status_code : 200
 Future<dynamic> getFakeRequest() async {
   /// Fake http request returns a Map after 4 seconds
   await Future.delayed(const Duration(seconds: 4));
@@ -15,7 +16,8 @@ Future<dynamic> getFakeRequest() async {
   };
 }
 
-/// Take a list of files and use the OCR Api to process them, return the results
+/// Take a list of files [result] and use the OCR Api to process them
+/// return the results as a ReceiptModel
 Future<ReceiptModel> getOCRResults(result) async {
   List<File> files = result.paths.map<File>((path) => File('$path')).toList();
   var req = http.MultipartRequest(

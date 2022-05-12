@@ -15,8 +15,8 @@
 ---
 
 ## Missing Features
-- File upload to server not working 
-- OCR not working
+
+- Saving and loading Receipps not working
 - HistoryCharts not working 
 
 ---
@@ -27,26 +27,18 @@
 ## Glossary 
 1. Api (Application Programming Interface)
 2. OCR 
-3. Screen Reader
-4. Datasets
-5. Web Scraping
-6. Serialization
-7. JSON
-8. Requests
-9. Responses 
+3. Serialization
+4. JSON
+5. Requests
+6. Responses 
 
 ---
 
 ### Functional Requirements
-1. Users can zoom in and out of any part of the interface through standard zoom gestures
-   1. Client must be running on a device with touch capacity
-2. Users can generate charts in the app and export them to multiple file types 
+1. Users can store data about receipts on their device locally
+2. Users can generate charts in the app and choose their own x and y parameters
 3. Users can group transactions into multiple different categories
-   1. Client must be connected to a copy of RESTApi
-   2. Client must have values in the database
 4. Any text can be tapped two twice to have its contents read out to the user 
-   1. Client must be using a touch capable device 
-   2. Client must be using a device with screen reader abilities
 5. Users can take images of receipts and the ocr will fill as many fields as it can
 
 ---
@@ -67,20 +59,18 @@ Client --> Api Server --> OCRProcessor --> Server --> Client
 ```mermaid
 classDiagram
 class ApiWrapper{
-    ocr(File)
-    history(items, categories, place)
+    getFakeRequest()
+    getOCRResults(result)   // result is a file choose by the user
 }
 ```
 ### Application Overview
 
 ```mermaid
 graph TD;
-MainApp --> TransactionView --> 
-MainApp --> ImageLoaderView
-MainApp --> AddTransactionView
-MainApp --> ChartView
-TransactionView --setState--> TransactionState
-TransactionState --build--> TransactionView 
+MainApp --> ReceiptListView --> ReceiptLocalStorage.get() 
+MainApp --> ImageLoaderView --> ReceiptModel()
+MainApp --> ReceiptFormView --> ReceiptModel.save()
+MainApp --> ChartView --> ReceiptLocalStorage
 ```
 
 
@@ -94,7 +84,8 @@ class MainApp{
 
 ```mermaid
 classDiagram
-class TransactionView~StatelessWidget~{
+class ReceiptListView~StatefulWidget~{
+    List ReceiptModel receipts
     build()
 }
 ```

@@ -28,7 +28,7 @@ class _CustomNavBarState extends State<CustomNavBar> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => const TransactionView(),
+              builder: (context) => const ReceiptListView(),
             ),
           );
         } else if (value == 2) {

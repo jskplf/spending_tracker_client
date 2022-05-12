@@ -1,4 +1,4 @@
-export 'transaction_view.dart';
+export 'receipt_list_view.dart';
 export 'image_loader_view.dart';
 export 'charts_view.dart';
 export 'receipt_view.dart';

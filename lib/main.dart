@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
         /// Start the app at the login screen
         /// The following are all possible screens that the application can
         /// navigate to
-        '/transactions': (context) => const TransactionView(),
+        '/transactions': (context) => const ReceiptListView(),
         '/camera': (context) => const ImageLoaderView(),
         // '/charts'
       },
