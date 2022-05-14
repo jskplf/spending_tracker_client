@@ -1,30 +1,8 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:spending_tracker/main.dart';
 import 'package:spending_tracker/services/api.dart';
 import 'package:spending_tracker/views/views.dart';
-import 'package:spending_tracker/widgets/custom_nav_bar.dart';
-
-import '../widgets/readable.dart';
-
-class ImageLoaderView extends StatelessWidget {
-  /// This screen allows the user to select an image from their device by
-  const ImageLoaderView({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: const CustomNavBar(),
-      appBar: AppBar(
-        title: const Readable(
-          text: 'Load Receipt',
-        ),
-      ),
-      body: const Center(
-        child: LoadImageButton(),
-      ),
-    );
-  }
-}
 
 class LoadImageButton extends StatelessWidget {
   /// Opens a native os file picker, uploads the image the user selects to the
@@ -37,7 +15,8 @@ class LoadImageButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
+    return IconButton(
+      icon: const Icon(Icons.camera_alt),
       onPressed: () async {
         FilePickerResult? result = await FilePicker.platform
             .pickFiles(allowMultiple: false, type: FileType.image);
@@ -62,10 +41,13 @@ class LoadImageButton extends StatelessWidget {
                     } else if (snapshot.hasData) {
                       // Extracting data from snapshot object
                       final data = snapshot.data;
+                      print('$data');
+                      GlobalScope.of(context)!.receipts.value.add(data);
                       return Center(
                         child: ReceiptView(
-                          index: 0,
-                        ),
+                            index:
+                                GlobalScope.of(context)!.receipts.value.length -
+                                    1),
                       );
                     }
                   }
@@ -82,7 +64,6 @@ class LoadImageButton extends StatelessWidget {
           );
         }
       },
-      child: const Readable(text: 'Load Receipt'),
     );
   }
 }

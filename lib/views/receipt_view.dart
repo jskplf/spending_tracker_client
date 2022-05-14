@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:spending_tracker/main.dart';
+import 'package:spending_tracker/views/image_loader_view.dart';
 import 'package:spending_tracker/views/receipt_list_view.dart';
+import 'package:spending_tracker/widgets/widgets.dart';
 
 class ReceiptView extends StatelessWidget {
   const ReceiptView({Key? key, required this.index}) : super(key: key);
@@ -15,12 +17,19 @@ class ReceiptView extends StatelessWidget {
     var storeController = TextEditingController(text: data.store);
     var addressController = TextEditingController(text: data.address);
     var dateController = TextEditingController(text: data.date);
-    var totalController = TextEditingController(text: data.total);
+    var totalController = TextEditingController(text: '${data.total}');
     var categoryController = TextEditingController(text: data.category);
 
     var _formKey = GlobalKey<FormState>();
     return Scaffold(
-      appBar: AppBar(),
+      floatingActionButton: FloatingActionButton(
+        child: LoadImageButton(),
+        onPressed: () {},
+      ),
+      bottomNavigationBar: CustomNavBar(),
+      appBar: AppBar(
+        title: Text('Edit Receipt'),
+      ),
       body: Form(
         onChanged: () {
           /// Validate the form, true if valid otherwise false
@@ -49,6 +58,9 @@ class ReceiptView extends StatelessWidget {
                         labelText: 'Store Name',
                         border: OutlineInputBorder(),
                       ),
+                      validator: (value) {
+                        if (value!.length > 4) return null;
+                      },
                       controller: storeController,
                     ),
                   ),

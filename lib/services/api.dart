@@ -26,6 +26,8 @@ Future<ReceiptModel> getOCRResults(result) async {
       filename: files[0].path.split("/").last);
   req.files.add(f);
   var res = await req.send();
-  var json = jsonDecode(await res.stream.bytesToString());
-  return ReceiptModel.fromJson(json);
+  var json = jsonDecode(await res.stream.bytesToString())['data'];
+  // json = jsonDecode(json);
+  print(json[0]['parsed_date']);
+  return ReceiptModel.fromJson(json[0] as Map<String, dynamic>);
 }

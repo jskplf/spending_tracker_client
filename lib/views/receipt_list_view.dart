@@ -88,7 +88,9 @@ class ReadableTile extends StatelessWidget {
               trailing: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Readable(text: receipt.value.total ?? 'Missing Subtotal'),
+                  Readable(
+                      text:
+                          receipt.value.total.toString() ?? 'Missing Subtotal'),
                   Readable(text: receipt.value.date ?? 'Missing Date'),
                 ],
               ),

@@ -27,7 +27,6 @@ class MyApp extends StatelessWidget {
           /// The following are all possible screens that the application can
           /// navigate to
           '/receipts': (context) => ReceiptListView(),
-          '/camera': (context) => const ImageLoaderView(),
           // '/charts'
         },
       ),
