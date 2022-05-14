@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:spending_tracker/main.dart';
+import 'package:spending_tracker/views/receipt_list_view.dart';
 import 'package:spending_tracker/widgets/widgets.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -214,11 +216,11 @@ class ChartView extends StatelessWidget {
       bottomNavigationBar: CustomNavBar(),
       body: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 8.0,
           ),
-          GraphView(),
-          SizedBox(
+          const GraphView(),
+          const SizedBox(
             height: 10.0,
           ),
           ValueListenableBuilder(

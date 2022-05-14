@@ -64,7 +64,7 @@ class LoadImageButton extends StatelessWidget {
                       final data = snapshot.data;
                       return Center(
                         child: ReceiptView(
-                          receipt: data,
+                          index: 0,
                         ),
                       );
                     }

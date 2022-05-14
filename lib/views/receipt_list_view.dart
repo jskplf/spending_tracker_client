@@ -1,63 +1,55 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:spending_tracker/services/storage.dart';
+import 'package:spending_tracker/main.dart';
 import 'package:spending_tracker/views/receipt_view.dart';
 
 import '../models/receipt.dart';
 import '../widgets/widgets.dart';
 
-int currentFilter = 0;
-
-class ReceiptListView extends StatefulWidget {
-  /// Show all of the users transaction in spreadsheet like format
-  const ReceiptListView({Key? key}) : super(key: key);
-
-  @override
-  State<ReceiptListView> createState() => _ReceiptListViewState();
-}
-
-class _ReceiptListViewState extends State<ReceiptListView> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-            title: const Readable(
-          text: 'My Receipts',
-        )),
-        bottomNavigationBar: const CustomNavBar(),
-        body: ReceiptList(r: []));
-  }
-}
+ValueNotifier<int> currentFilter = ValueNotifier(0);
 
 class ReceiptList extends StatelessWidget {
   const ReceiptList({
     Key? key,
-    required this.r,
   }) : super(key: key);
-
-  final List r;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Column(
-        children: [
-          const Center(
-            child: TransactionFiltersBar(),
-          ),
+      child: ValueListenableBuilder(
+        valueListenable: GlobalScope.of(context)!.receipts,
+        builder: (context, value, child) {
+          return Column(
+            children: [
+              const Center(
+                child: ReceiptsFiltersBar(),
+              ),
 
-          /// Display all of the users transactions
+              /// Display all of the users transactions
 
-          Expanded(
-              child: ListView(
-            shrinkWrap: true,
-            children: r
-                .asMap()
-                .entries
-                .map<Widget>((e) => ReadableTile(receipt: e.value))
-                .toList(),
-          ))
-        ],
+              Expanded(
+                child: ListView(
+                  shrinkWrap: true,
+                  children: GlobalScope.of(context)!
+                      .receipts
+                      .value
+                      .asMap()
+                      .entries
+                      .map<Widget>(
+                        (e) => AnimatedBuilder(
+                          animation: e.value,
+                          builder: ((context, v) {
+                            return ReadableTile(receipt: e);
+                          }),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -74,7 +66,7 @@ class ReadableTile extends StatelessWidget {
     required this.receipt,
   }) : super(key: key);
 
-  final ReceiptModel receipt;
+  final receipt;
 
   @override
   Widget build(BuildContext context) {
@@ -82,43 +74,35 @@ class ReadableTile extends StatelessWidget {
       padding: const EdgeInsets.all(
         8.0,
       ),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(25.0),
-          border: Border.all(
-              width: 5.0,
-
-              /// Change the color of the transaction tile's border depending on
-              /// the type transaction this is
-              /// ```mermaid
-              /// flowChart
-              /// Expense --> Red
-              /// Income --> Green
-              /// ```
-              color: receipt.category == 'e' ? Colors.red : Colors.green),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ListTile(
-            title: Readable(text: receipt.store ?? 'Missing Store'),
-            subtitle: Readable(text: receipt.category ?? 'Missing Category'),
-            trailing: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Readable(text: receipt.total ?? 'Missing Subtotal'),
-                Readable(text: receipt.date ?? 'Missing Date'),
-              ],
-            ),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ReceiptView(
-                    receipt: receipt,
+      child: AnimatedBuilder(
+        animation: receipt.value,
+        builder: (context, child) => child!,
+        child: Card(
+          elevation: 5.0,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ListTile(
+              title: Readable(text: receipt.value.store ?? 'Missing Store'),
+              subtitle:
+                  Readable(text: receipt.value.category ?? 'Missing Category'),
+              trailing: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Readable(text: receipt.value.total ?? 'Missing Subtotal'),
+                  Readable(text: receipt.value.date ?? 'Missing Date'),
+                ],
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ReceiptView(
+                      index: receipt.key,
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
       ),
@@ -126,17 +110,17 @@ class ReadableTile extends StatelessWidget {
   }
 }
 
-class TransactionFiltersBar extends StatefulWidget {
+class ReceiptsFiltersBar extends StatefulWidget {
   /// This widget is button bar whose buttons filter the current views transactions
-  const TransactionFiltersBar({
+  const ReceiptsFiltersBar({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<TransactionFiltersBar> createState() => _TransactionFiltersBarState();
+  State<ReceiptsFiltersBar> createState() => _ReceiptsFiltersBarState();
 }
 
-class _TransactionFiltersBarState extends State<TransactionFiltersBar> {
+class _ReceiptsFiltersBarState extends State<ReceiptsFiltersBar> {
   @override
   Widget build(BuildContext context) {
     return ButtonBar(
@@ -144,9 +128,7 @@ class _TransactionFiltersBarState extends State<TransactionFiltersBar> {
       children: [
         OutlinedButton(
           onPressed: () {
-            setState(() {
-              currentFilter = 0;
-            });
+            currentFilter.value = 0;
           },
           child: const Readable(
             text: 'Last Month',
@@ -154,21 +136,32 @@ class _TransactionFiltersBarState extends State<TransactionFiltersBar> {
         ),
         OutlinedButton(
           onPressed: () {
-            setState(() {
-              currentFilter = 1;
-            });
+            currentFilter.value = 1;
           },
           child: const Readable(text: 'Expenses'),
         ),
         OutlinedButton(
           onPressed: () {
-            setState(() {
-              currentFilter = 2;
-            });
+            currentFilter.value = 2;
           },
           child: const Readable(text: 'Income'),
         ),
       ],
     );
+  }
+}
+
+class ReceiptListView extends StatelessWidget {
+  const ReceiptListView({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+            title: const Readable(
+          text: 'My Receipts',
+        )),
+        bottomNavigationBar: CustomNavBar(),
+        body: ReceiptList());
   }
 }
