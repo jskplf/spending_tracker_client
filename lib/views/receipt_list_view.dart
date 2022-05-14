@@ -91,7 +91,7 @@ class ReadableTile extends StatelessWidget {
                   Readable(
                       text:
                           receipt.value.total.toString() ?? 'Missing Subtotal'),
-                  Readable(text: receipt.value.date ?? 'Missing Date'),
+                  Readable(text: '${receipt.value.date} ' ?? 'Missing Date'),
                 ],
               ),
               onTap: () {

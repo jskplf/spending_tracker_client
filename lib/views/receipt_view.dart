@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:spending_tracker/main.dart';
 import 'package:spending_tracker/views/image_loader_view.dart';
-import 'package:spending_tracker/views/receipt_list_view.dart';
 import 'package:spending_tracker/widgets/widgets.dart';
 
 class ReceiptView extends StatelessWidget {
@@ -16,14 +15,16 @@ class ReceiptView extends StatelessWidget {
     data = data[index];
     var storeController = TextEditingController(text: data.store);
     var addressController = TextEditingController(text: data.address);
-    var dateController = TextEditingController(text: data.date);
+    var dateController = TextEditingController(text: '${data.date}');
     var totalController = TextEditingController(text: '${data.total}');
     var categoryController = TextEditingController(text: data.category);
 
     var _formKey = GlobalKey<FormState>();
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        child: LoadImageButton(),
+        child: LoadImageButton(
+          index: index,
+        ),
         onPressed: () {},
       ),
       bottomNavigationBar: CustomNavBar(),
@@ -33,14 +34,14 @@ class ReceiptView extends StatelessWidget {
       body: Form(
         onChanged: () {
           /// Validate the form, true if valid otherwise false
-          if (_formKey.currentState!.validate()) {
-            /// Update all the class variables to the correct values
-            data.store = storeController.text;
-            data.address = addressController.text;
-            data.category = categoryController.text;
-            data.date = dateController.text;
-            data.total = totalController.text;
-          }
+          // if (_formKey.currentState!.validate()) {
+          //   /// Update all the class variables to the correct values
+          //   data.store = storeController.text;
+          //   data.address = addressController.text;
+          //   data.category = categoryController.text;
+          //   data.date = dateController.text;
+          //   data.total = totalController.text;
+          // }
         },
         key: _formKey,
         child: AnimatedBuilder(
@@ -59,7 +60,9 @@ class ReceiptView extends StatelessWidget {
                         border: OutlineInputBorder(),
                       ),
                       validator: (value) {
-                        if (value!.length > 4) return null;
+                        if (value!.length > 25) {
+                          return 'Error: Store name must be less than 25 characters';
+                        }
                       },
                       controller: storeController,
                     ),
@@ -129,7 +132,14 @@ class ReceiptView extends StatelessWidget {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.pushReplacementNamed(context, '/receipts');
+                        if (_formKey.currentState!.validate()) {
+                          data.store = storeController.text;
+                          data.address = addressController.text;
+                          data.category = categoryController.text;
+                          data.date = dateController.text;
+                          data.total = totalController.text;
+                          Navigator.pushReplacementNamed(context, '/receipts');
+                        }
                       },
                       child: Text('Save'),
                     ),
