@@ -23,7 +23,7 @@ void main() {
         home: AnimatedBuilder(
             animation: receipts,
             builder: (context, child) {
-              return Scaffold(body: ReceiptList(r: receipts.value));
+              return Scaffold(body: ReceiptList());
             }),
       ));
 
@@ -50,7 +50,7 @@ void main() {
         home: AnimatedBuilder(
             animation: receipts,
             builder: (context, child) {
-              return Scaffold(body: ReceiptList(r: receipts.value));
+              return Scaffold(body: ReceiptList());
             }),
       ));
       receipts.value.add(ReceiptModel(store: 'Added this afterwards'));
