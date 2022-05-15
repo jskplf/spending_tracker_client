@@ -12,24 +12,26 @@ class ChartsView extends StatelessWidget {
     var receipts = GlobalScope.of(context)!.receipts.value;
 
     return Scaffold(
-        appBar: AppBar(title: Text('My Graph')),
-        bottomNavigationBar: const CustomNavBar(),
-        body: ColumnGraphWidget(
-          receipts: receipts,
-        ));
+      appBar: AppBar(title: Text('My Graph')),
+      bottomNavigationBar: const CustomNavBar(),
+      body: receipts.length > 0
+          ? ColumnGraphWidget()
+          : Center(
+              child: Text('Error: Please add receipts'),
+            ),
+    );
   }
 }
 
 class ColumnGraphWidget extends StatelessWidget {
   const ColumnGraphWidget({
     Key? key,
-    required this.receipts,
   }) : super(key: key);
-
-  final List<ReceiptModel> receipts;
 
   @override
   Widget build(BuildContext context) {
+    final List<ReceiptModel> receipts = GlobalScope.of(context)!.receipts.value;
+
     print(receipts);
     dynamic chartData = toColumnChart(receipts);
     double max = double.parse(chartData[1].toString());

@@ -11,7 +11,7 @@ class ReceiptView extends StatelessWidget {
   /// Index of current receipt that is being shown
   @override
   Widget build(BuildContext context) {
-    var data = GlobalScope.of(context)!.receipts.value;
+    dynamic data = GlobalScope.of(context)!.receipts.value;
     data = data[index];
     var storeController = TextEditingController(text: data.store);
     var addressController = TextEditingController(text: data.address);

@@ -44,10 +44,8 @@ class GlobalScope extends InheritedWidget {
     return context.dependOnInheritedWidgetOfExactType<GlobalScope>();
   }
 
-  final ValueNotifier receipts = ValueNotifier(
-    [
-      ReceiptModel(),
-    ],
+  final ValueNotifier<List<ReceiptModel>> receipts = ValueNotifier(
+    [],
   );
   @override
   bool updateShouldNotify(covariant InheritedWidget oldWidget) {
