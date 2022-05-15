@@ -19,37 +19,35 @@ class ReceiptList extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: ValueListenableBuilder(
         valueListenable: GlobalScope.of(context)!.receipts,
-        builder: (context, value, child) {
-          return Column(
-            children: [
-              const Center(
-                child: ReceiptsFiltersBar(),
-              ),
+        builder: (context, _, __) => Column(
+          children: [
+            const Center(
+              child: ReceiptsFiltersBar(),
+            ),
 
-              /// Display all of the users transactions
+            /// Display all of the users transactions
 
-              Expanded(
-                child: ListView(
-                  shrinkWrap: true,
-                  children: GlobalScope.of(context)!
-                      .receipts
-                      .value
-                      .asMap()
-                      .entries
-                      .map<Widget>(
-                        (e) => AnimatedBuilder(
-                          animation: e.value,
-                          builder: ((context, v) {
-                            return ReadableTile(receipt: e);
-                          }),
-                        ),
-                      )
-                      .toList(),
-                ),
+            Expanded(
+              child: ListView(
+                shrinkWrap: true,
+                children: GlobalScope.of(context)!
+                    .receipts
+                    .value
+                    .asMap()
+                    .entries
+                    .map<Widget>(
+                      (e) => AnimatedBuilder(
+                        animation: e.value,
+                        builder: ((context, v) {
+                          return ReadableTile(receipt: e);
+                        }),
+                      ),
+                    )
+                    .toList(),
               ),
-            ],
-          );
-        },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -89,9 +87,8 @@ class ReadableTile extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Readable(
-                      text:
-                          receipt.value.total.toString() ?? 'Missing Subtotal'),
-                  Readable(text: '${receipt.value.date} ' ?? 'Missing Date'),
+                      text: '${receipt.value.total ?? 'Missing Subtotal'}'),
+                  Readable(text: '${receipt.value.date ?? 'Missing Date'}'),
                 ],
               ),
               onTap: () {

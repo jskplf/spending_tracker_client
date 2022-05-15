@@ -32,17 +32,7 @@ class ReceiptView extends StatelessWidget {
         title: Text('Edit Receipt'),
       ),
       body: Form(
-        onChanged: () {
-          /// Validate the form, true if valid otherwise false
-          // if (_formKey.currentState!.validate()) {
-          //   /// Update all the class variables to the correct values
-          //   data.store = storeController.text;
-          //   data.address = addressController.text;
-          //   data.category = categoryController.text;
-          //   data.date = dateController.text;
-          //   data.total = totalController.text;
-          // }
-        },
+        onChanged: () {},
         key: _formKey,
         child: AnimatedBuilder(
           animation: data,
@@ -63,6 +53,11 @@ class ReceiptView extends StatelessWidget {
                         if (value!.length > 25) {
                           return 'Error: Store name must be less than 25 characters';
                         }
+
+                        if (value.isEmpty) {
+                          return 'Error: Store name cannot be empty';
+                        }
+                        return null;
                       },
                       controller: storeController,
                     ),
@@ -88,6 +83,12 @@ class ReceiptView extends StatelessWidget {
 
                     /// For Date
                     child: TextFormField(
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Error: Date can not be empty';
+                        }
+                        return null;
+                      },
                       decoration: InputDecoration(
                         labelText: 'Date',
                         border: OutlineInputBorder(),
@@ -102,6 +103,12 @@ class ReceiptView extends StatelessWidget {
 
                     /// For Date
                     child: TextFormField(
+                      validator: (value) {
+                        if (value!.length > 15) {
+                          return 'Error: Category length must be less then 15 characters';
+                        }
+                        return null;
+                      },
                       decoration: InputDecoration(
                         labelText: 'Category',
                         border: OutlineInputBorder(),
@@ -116,6 +123,17 @@ class ReceiptView extends StatelessWidget {
 
                     /// For Date
                     child: TextFormField(
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Error: Total is a required field';
+                        }
+                        try {
+                          double.parse(value);
+                        } catch (_) {
+                          return 'Error: Total must be a number';
+                        }
+                        return null;
+                      },
                       decoration: InputDecoration(
                         labelText: 'Total',
                         border: OutlineInputBorder(),
@@ -147,7 +165,7 @@ class ReceiptView extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                           primary: Color.fromARGB(255, 250, 82, 70)),
                       onPressed: () {
-                        GlobalScope.of(context)!.receipts.value.removeAt(index);
+                        GlobalScope.of(context)!.deleteReceipt(index);
                         Navigator.pushReplacementNamed(context, '/receipts');
                       },
                       child: Text('Delete'),
