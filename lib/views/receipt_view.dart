@@ -187,7 +187,7 @@ class TotalField extends StatelessWidget {
         /// For Date
         child: TextFormField(
           validator: (value) {
-            var re = RegExp(r'\d+. ?\d\d\D');
+            var re = RegExp(r'\d*. ?\d\d');
 
             if (re.hasMatch(value ?? "")) {
               return null;

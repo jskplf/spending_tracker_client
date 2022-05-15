@@ -20,7 +20,7 @@ class CustomNavBar extends StatelessWidget {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => const ChartView(),
+                builder: (context) => const ChartsView(),
               ),
             );
           } else if (currentScreen.value == 1) {
