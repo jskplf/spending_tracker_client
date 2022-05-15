@@ -11,21 +11,12 @@ class ChartsView extends StatelessWidget {
   Widget build(BuildContext context) {
     var receipts = GlobalScope.of(context)!.receipts.value;
 
-    try {
-      return Scaffold(
-          appBar: AppBar(title: Text('My Graph')),
-          bottomNavigationBar: const CustomNavBar(),
-          body: ColumnGraphWidget(
-            receipts: receipts,
-          ));
-    } catch (e) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text('My Graph'),
-        ),
-        body: Text('UNable to display graphs at this time'),
-      );
-    }
+    return Scaffold(
+        appBar: AppBar(title: Text('My Graph')),
+        bottomNavigationBar: const CustomNavBar(),
+        body: ColumnGraphWidget(
+          receipts: receipts,
+        ));
   }
 }
 
@@ -39,25 +30,31 @@ class ColumnGraphWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(receipts);
     dynamic chartData = toColumnChart(receipts);
-    double max = chartData[1];
-    double interval = chartData[2];
+    double max = double.parse(chartData[1].toString());
+    double interval = double.parse(chartData[2].toString());
     chartData = chartData[0];
 
-    return SfCartesianChart(
-      primaryXAxis: CategoryAxis(),
-      primaryYAxis: NumericAxis(
-          minimum: 0,
-          maximum: max.toDouble(),
-          interval: interval.toInt().toDouble()),
-      series: <ChartSeries<ColumnCartData, String>>[
-        ColumnSeries<ColumnCartData, String>(
-          dataSource: chartData,
-          xValueMapper: (ColumnCartData data, _) => data.x,
-          yValueMapper: (ColumnCartData data, _) => data.y,
-        )
-      ],
-    );
+    return chartData.length > 0
+        ? SfCartesianChart(
+            primaryXAxis: CategoryAxis(),
+            primaryYAxis: NumericAxis(
+                minimum: 0,
+                maximum: max.toDouble(),
+                interval: interval.toInt().toDouble()),
+            series: <ChartSeries<ColumnCartData, String>>[
+              ColumnSeries<ColumnCartData, String>(
+                dataSource: chartData as List<ColumnCartData>,
+                xValueMapper: (ColumnCartData data, _) => data.x,
+                yValueMapper: (ColumnCartData data, _) => data.y,
+              )
+            ],
+          )
+        : const Center(
+            child:
+                Text('Error: You must add receipts before you can view charts'),
+          );
   }
 }
 
@@ -83,10 +80,10 @@ dynamic toColumnChart(List<ReceiptModel> receipts) {
   });
   double interval = max / receipts.length;
   List<ColumnCartData> x = [];
-  if (totals == null) {
-    return [];
+  print(totals);
+  if (totals[null] != null) {
+    return [[], 100, 10];
   }
-  if (totals == {}) return [[], 100, 10];
   totals.forEach((key, value) {
     x.add(ColumnCartData(x: key, y: value));
   });
