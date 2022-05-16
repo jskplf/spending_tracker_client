@@ -207,10 +207,7 @@ class TotalField extends StatelessWidget {
               return 'Error: Total cannot have any letters';
             } else if (re.hasMatch(value)) {
               if (re.hasMatch(value)) {
-                print(re.firstMatch(value));
-                // if (== value) {
                 return null;
-                // }
               }
             } else {
               return 'Error: Invalid value for Total';

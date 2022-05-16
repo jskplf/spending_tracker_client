@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:spending_tracker/main.dart';
 import 'package:spending_tracker/models/receipt.dart';
+import 'package:spending_tracker/views/receipt_view.dart';
 import 'package:spending_tracker/widgets/widgets.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -9,7 +10,11 @@ class ChartsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController startDate = TextEditingController();
+    TextEditingController endDate = TextEditingController();
+
     var receipts = GlobalScope.of(context)!.receipts.value;
+    var _formKey = GlobalKey<FormState>();
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Graph'),
@@ -17,31 +22,33 @@ class ChartsView extends StatelessWidget {
       ),
       bottomNavigationBar: const CustomNavBar(),
       body: receipts.isNotEmpty
-          ? Column(
-              children: [
-                DropdownButton(
-                    value: ColumnGraphWidget.chartData.value,
-                    items: const [
-                      DropdownMenuItem(
-                        child: Text('Stores'),
-                        value: 0,
-                      ),
-                      DropdownMenuItem(
-                        child: Text('Categories'),
-                        value: 1,
-                      ),
+          ? Form(
+              onChanged: (() {
+                if (_formKey.currentState!.validate()) {
+                  /// Update date filters
+                  ColumnGraphWidget.startDate.value = startDate.text;
+                  ColumnGraphWidget.endDate.value = endDate.text;
+                  
+                }
+              }),
+              key: _formKey,
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      const GraphDropDown(),
+                      SizedBox(
+                          width: 200,
+                          child: DateField(dateController: startDate)),
+                      SizedBox(
+                          width: 200,
+                          child: DateField(dateController: endDate)),
                     ],
-                    onChanged: (value) {
-                      print(value);
-                      ColumnGraphWidget.chartData.value = value;
-                      print(ColumnGraphWidget.chartData.value);
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ChartsView()));
-                    }),
-                const ColumnGraphWidget(),
-              ],
+                  ),
+                  const ColumnGraphWidget(),
+                ],
+              ),
             )
           : const Center(
               child: Text('Error: Please add receipts'),
@@ -50,8 +57,42 @@ class ChartsView extends StatelessWidget {
   }
 }
 
+/// Drop down button that lets the user choose the x axis of the graph
+/// when an item is selected the app
+class GraphDropDown extends StatelessWidget {
+  const GraphDropDown({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButton(
+        value: ColumnGraphWidget.chartData.value,
+        items: const [
+          DropdownMenuItem(
+            child: Text('Stores'),
+            value: 0,
+          ),
+          DropdownMenuItem(
+            child: Text('Categories'),
+            value: 1,
+          ),
+        ],
+        onChanged: (value) {
+          ColumnGraphWidget.chartData.value = value;
+          Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                  pageBuilder: (_, __, ___) => const ChartsView(),
+                  transitionDuration: const Duration(seconds: 0)));
+        });
+  }
+}
+
 class ColumnGraphWidget extends StatelessWidget {
   static ValueNotifier chartData = ValueNotifier<int>(0);
+  static ValueNotifier startDate = ValueNotifier<String>('');
+  static ValueNotifier endDate = ValueNotifier<String>('');
   const ColumnGraphWidget({
     Key? key,
   }) : super(key: key);
