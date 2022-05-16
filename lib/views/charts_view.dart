@@ -10,8 +10,10 @@ class ChartsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController startDate = TextEditingController();
-    TextEditingController endDate = TextEditingController();
+    TextEditingController startDate =
+        TextEditingController(text: ColumnGraphWidget.startDate.value);
+    TextEditingController endDate =
+        TextEditingController(text: ColumnGraphWidget.endDate.value);
 
     var receipts = GlobalScope.of(context)!.getReceipts().value;
     var _formKey = GlobalKey<FormState>();
@@ -28,6 +30,13 @@ class ChartsView extends StatelessWidget {
                   /// Update date filters
                   ColumnGraphWidget.startDate.value = startDate.text;
                   ColumnGraphWidget.endDate.value = endDate.text;
+                  Navigator.pushReplacement(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            const ChartsView(),
+                        transitionDuration: const Duration(seconds: 0),
+                      ));
                 }
               }),
               key: _formKey,

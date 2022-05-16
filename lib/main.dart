@@ -81,8 +81,44 @@ class GlobalScope extends InheritedWidget {
 
   /// Functions for generating graphs from the current receipts data
   dynamic toCategoryChart() {
-    dynamic names = receipts.value.map((e) => e.category).toList();
+    dynamic names = receipts.value
+        .where((element) {
+          String d = element.date;
+
+          String start = ColumnGraphWidget.startDate.value;
+          if (start == "") {
+            return true;
+          }
+          List startSplit = start.split('/');
+          List dSplit = d.split('/');
+          startSplit = startSplit.map((e) => int.parse(e)).toList();
+          dSplit = dSplit.map((e) => int.parse(e)).toList();
+          if (dSplit[2] < startSplit[2]) {
+            return false;
+          } else if (dSplit[1] < startSplit[1]) {
+            return false;
+          } else if (dSplit[0] < startSplit[0]) {
+            return false;
+          }
+
+          String end = ColumnGraphWidget.endDate.value;
+          List endSplit = end.split('/');
+          endSplit = endSplit.map((e) => int.parse(e)).toList();
+          if (dSplit[2] > endSplit[2]) {
+            return false;
+          } else if (dSplit[0] > endSplit[0]) {
+            return false;
+          } else if (dSplit[1] > endSplit[1]) {
+            return false;
+          }
+          return true;
+        })
+        .map((e) => e.category)
+        .toList();
     names = names.toSet();
+    if (names.isEmpty) {
+      return [[], 100, 10];
+    }
     var totals = {};
     var max = 0.0;
     names.forEach((name) => totals[name] = 0.0);
