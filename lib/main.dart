@@ -47,10 +47,12 @@ class GlobalScope extends InheritedWidget {
   }
 
   final ValueNotifier<List<ReceiptModel>> receipts = ValueNotifier(
-    GetStorage()
-        .read('receipts')
-        .map<ReceiptModel>((e) => ReceiptModel.fromJson(e))
-        .toList(),
+    GetStorage().read('receipts') == null
+        ? [] as List<ReceiptModel>
+        : GetStorage()
+            .read('receipts')
+            .map<ReceiptModel>((e) => ReceiptModel.fromJson(e))
+            .toList(),
   );
   @override
   bool updateShouldNotify(covariant InheritedWidget oldWidget) {
