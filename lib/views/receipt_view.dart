@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:spending_tracker/main.dart';
 import 'package:spending_tracker/views/image_loader_view.dart';
 import 'package:spending_tracker/widgets/widgets.dart';
@@ -40,24 +41,26 @@ class ReceiptView extends StatelessWidget {
         child: AnimatedBuilder(
           animation: data,
           builder: (context, child) {
-            return Column(
-              children: [
-                StoreField(storeController),
-                AddressField(addressController: addressController),
-                DateField(dateController: dateController),
-                CategoryField(categoryController: categoryController),
-                TotalField(totalController: totalController),
-                const FormSpacer(),
-                FormFooter(
-                    formKey: _formKey,
-                    data: data,
-                    storeController: storeController,
-                    addressController: addressController,
-                    categoryController: categoryController,
-                    dateController: dateController,
-                    totalController: totalController,
-                    index: index),
-              ],
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  StoreField(storeController),
+                  AddressField(addressController: addressController),
+                  DateField(dateController: dateController),
+                  CategoryField(categoryController: categoryController),
+                  TotalField(totalController: totalController),
+                  const FormSpacer(),
+                  FormFooter(
+                      formKey: _formKey,
+                      data: data,
+                      storeController: storeController,
+                      addressController: addressController,
+                      categoryController: categoryController,
+                      dateController: dateController,
+                      totalController: totalController,
+                      index: index),
+                ],
+              ),
             );
           },
         ),
@@ -138,7 +141,15 @@ class FormFooter extends StatelessWidget {
               data.category = categoryController.text;
               data.date = dateController.text;
               data.total = totalController.text;
+              GetStorage().write(
+                  'receipts',
+                  GlobalScope.of(context)!
+                      .receipts
+                      .value
+                      .map((e) => e.toJson())
+                      .toList());
               Navigator.pushReplacementNamed(context, '/receipts');
+              Navigator.popAndPushNamed(context, '/receipts');
             }
           },
           child: Text('Save'),
@@ -148,7 +159,9 @@ class FormFooter extends StatelessWidget {
               primary: Color.fromARGB(255, 250, 82, 70)),
           onPressed: () {
             GlobalScope.of(context)!.receipts.value.removeAt(index);
-            Navigator.pushReplacementNamed(context, '/receipts');
+            GetStorage()
+                .write('receipts', GlobalScope.of(context)!.receipts.value);
+            Navigator.popAndPushNamed(context, '/receipts');
           },
           child: Text('Delete'),
         ),

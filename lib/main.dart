@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import './views/views.dart';
 import 'models/receipt.dart';
+import 'package:get_storage/get_storage.dart';
 
 void main() async {
   /// Create a global list of receipts
-  var receipts = ValueNotifier([ReceiptModel(store: 'Demoing')]);
+  await GetStorage.init();
+  print(
+      GetStorage().read('receipts').map((e) => ReceiptModel.fromJson(e).store));
   runApp(const MyApp());
 }
 
@@ -45,7 +47,10 @@ class GlobalScope extends InheritedWidget {
   }
 
   final ValueNotifier<List<ReceiptModel>> receipts = ValueNotifier(
-    [],
+    GetStorage()
+        .read('receipts')
+        .map<ReceiptModel>((e) => ReceiptModel.fromJson(e))
+        .toList(),
   );
   @override
   bool updateShouldNotify(covariant InheritedWidget oldWidget) {
