@@ -74,7 +74,9 @@ class GlobalScope extends InheritedWidget {
     saveReceipts();
   }
 
-  ValueNotifier<List<ReceiptModel>> getFilteredReceipt() {
+  ValueNotifier<List<ReceiptModel>> getFilteredReceipts() {
+    /// Return a list of receipts filtered by the dates that the user has
+    /// entered
     return ValueNotifier(receipts.value.where((element) {
       String d = element.date;
 
@@ -115,7 +117,8 @@ class GlobalScope extends InheritedWidget {
 
   /// Functions for generating graphs from the current receipts data
   dynamic toCategoryChart() {
-    dynamic names = getFilteredReceipt().value.map((e) => e.category).toList();
+    var filtered = getFilteredReceipts().value;
+    dynamic names = filtered.map((e) => e.category).toList();
     names = names.toSet();
     if (names.isEmpty) {
       return [[], 100, 10];
@@ -123,7 +126,7 @@ class GlobalScope extends InheritedWidget {
     var totals = {};
     var max = 0.0;
     names.forEach((name) => totals[name] = 0.0);
-    for (var element in receipts.value) {
+    for (var element in filtered) {
       if (element.category != null) {
         totals[element.category] += double.parse(element.total);
         if (totals[element.category] > max) {
@@ -131,7 +134,7 @@ class GlobalScope extends InheritedWidget {
         }
       }
     }
-    double interval = max / receipts.value.length;
+    double interval = max / filtered.length;
     List<ColumnCartData> x = [];
 
     if (totals[null] != null) {
@@ -144,12 +147,16 @@ class GlobalScope extends InheritedWidget {
   }
 
   dynamic toStoreChart() {
-    dynamic names = receipts.value.map((e) => e.store).toList();
+    var filtered = getFilteredReceipts().value;
+    dynamic names = filtered.map((e) => e.store).toList();
     names = names.toSet();
+    if (names.isEmpty) {
+      return [[], 100, 10];
+    }
     var totals = {};
     var max = 0.0;
     names.forEach((name) => totals[name] = 0.0);
-    for (var element in receipts.value) {
+    for (var element in filtered) {
       if (element.store != null) {
         totals[element.store] += double.parse(element.total);
         if (totals[element.store] > max) {
@@ -157,8 +164,7 @@ class GlobalScope extends InheritedWidget {
         }
       }
     }
-
-    double interval = max / receipts.value.length;
+    double interval = max / filtered.length;
     List<ColumnCartData> x = [];
 
     if (totals[null] != null) {
