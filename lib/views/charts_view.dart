@@ -106,9 +106,9 @@ class ColumnGraphWidget extends StatelessWidget {
 
     dynamic tempData;
     if (chartData.value == 0) {
-      tempData = toStoreChart(receipts);
+      tempData = GlobalScope.of(context)!.toStoreChart();
     } else if (chartData.value == 1) {
-      tempData = toCategoryChart(receipts);
+      tempData = GlobalScope.of(context)!.toCategoryChart();
     }
     if (tempData == null) {
       return const Center(
@@ -149,57 +149,4 @@ class ColumnCartData {
   ColumnCartData({required this.x, required this.y});
   final String x;
   final double y;
-}
-
-dynamic toCategoryChart(List<ReceiptModel> receipts) {
-  dynamic names = receipts.map((e) => e.category).toList();
-  names = names.toSet();
-  var totals = {};
-  var max = 0.0;
-  names.forEach((name) => totals[name] = 0.0);
-  for (var element in receipts) {
-    if (element.category != null) {
-      totals[element.category] += double.parse(element.total);
-      if (totals[element.category] > max) {
-        max = totals[element.category];
-      }
-    }
-  }
-  double interval = max / receipts.length;
-  List<ColumnCartData> x = [];
-
-  if (totals[null] != null) {
-    return [[], 100, 10];
-  }
-  totals.forEach((key, value) {
-    x.add(ColumnCartData(x: key, y: value));
-  });
-  return [x, max, interval];
-}
-
-dynamic toStoreChart(List<ReceiptModel> receipts) {
-  dynamic names = receipts.map((e) => e.store).toList();
-  names = names.toSet();
-  var totals = {};
-  var max = 0.0;
-  names.forEach((name) => totals[name] = 0.0);
-  for (var element in receipts) {
-    if (element.store != null) {
-      totals[element.store] += double.parse(element.total);
-      if (totals[element.store] > max) {
-        max = totals[element.store];
-      }
-    }
-  }
-
-  double interval = max / receipts.length;
-  List<ColumnCartData> x = [];
-
-  if (totals[null] != null) {
-    return [[], 100, 10];
-  }
-  totals.forEach((key, value) {
-    x.add(ColumnCartData(x: key, y: value));
-  });
-  return [x, max, interval];
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:spending_tracker/main.dart';
 import 'package:spending_tracker/views/image_loader_view.dart';
 import 'package:spending_tracker/widgets/widgets.dart';
@@ -133,39 +132,79 @@ class FormFooter extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        ElevatedButton(
-          onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              data.store = storeController.text;
-              data.address = addressController.text;
-              data.category = categoryController.text;
-              data.date = dateController.text;
-              data.total = totalController.text;
-              GetStorage().write(
-                  'receipts',
-                  GlobalScope.of(context)!
-                      .receipts
-                      .value
-                      .map((e) => e.toJson())
-                      .toList());
-              Navigator.pushReplacementNamed(context, '/receipts');
-              Navigator.popAndPushNamed(context, '/receipts');
-            }
-          },
-          child: Text('Save'),
-        ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-              primary: Color.fromARGB(255, 250, 82, 70)),
-          onPressed: () {
-            GlobalScope.of(context)!.receipts.value.removeAt(index);
-            GetStorage()
-                .write('receipts', GlobalScope.of(context)!.receipts.value);
-            Navigator.popAndPushNamed(context, '/receipts');
-          },
-          child: Text('Delete'),
-        ),
+        SaveReceiptButton(
+            formKey: _formKey,
+            data: data,
+            storeController: storeController,
+            addressController: addressController,
+            categoryController: categoryController,
+            dateController: dateController,
+            totalController: totalController),
+        DeleteReceiptButton(index: index),
       ],
+    );
+  }
+}
+
+class SaveReceiptButton extends StatelessWidget {
+  const SaveReceiptButton({
+    Key? key,
+    required GlobalKey<FormState> formKey,
+    required this.data,
+    required this.storeController,
+    required this.addressController,
+    required this.categoryController,
+    required this.dateController,
+    required this.totalController,
+  })  : _formKey = formKey,
+        super(key: key);
+
+  final GlobalKey<FormState> _formKey;
+  final data;
+  final TextEditingController storeController;
+  final TextEditingController addressController;
+  final TextEditingController categoryController;
+  final TextEditingController dateController;
+  final TextEditingController totalController;
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        if (_formKey.currentState!.validate()) {
+          data.store = storeController.text;
+          data.address = addressController.text;
+          data.category = categoryController.text;
+          data.date = dateController.text;
+          data.total = totalController.text;
+          GlobalScope.of(context)!.saveReceipts();
+          Navigator.pushReplacementNamed(context, '/receipts');
+          Navigator.popAndPushNamed(context, '/receipts');
+        }
+      },
+      child: Text('Save'),
+    );
+  }
+}
+
+class DeleteReceiptButton extends StatelessWidget {
+  const DeleteReceiptButton({
+    Key? key,
+    required this.index,
+  }) : super(key: key);
+
+  final int index;
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      style:
+          ElevatedButton.styleFrom(primary: Color.fromARGB(255, 250, 82, 70)),
+      onPressed: () {
+        GlobalScope.of(context)!.deleteReceipt(index);
+        Navigator.popAndPushNamed(context, '/receipts');
+      },
+      child: const Text('Delete'),
     );
   }
 }
