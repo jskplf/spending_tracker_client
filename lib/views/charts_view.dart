@@ -13,7 +13,7 @@ class ChartsView extends StatelessWidget {
     TextEditingController startDate = TextEditingController();
     TextEditingController endDate = TextEditingController();
 
-    var receipts = GlobalScope.of(context)!.receipts.value;
+    var receipts = GlobalScope.of(context)!.getReceipts().value;
     var _formKey = GlobalKey<FormState>();
     return Scaffold(
       appBar: AppBar(
@@ -28,7 +28,6 @@ class ChartsView extends StatelessWidget {
                   /// Update date filters
                   ColumnGraphWidget.startDate.value = startDate.text;
                   ColumnGraphWidget.endDate.value = endDate.text;
-                  
                 }
               }),
               key: _formKey,

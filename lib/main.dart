@@ -55,6 +55,15 @@ class GlobalScope extends InheritedWidget {
             .map<ReceiptModel>((e) => ReceiptModel.fromJson(e))
             .toList(),
   );
+
+  ValueNotifier<List<ReceiptModel>> getReceipts() {
+    return receipts;
+  }
+
+  ReceiptModel getReceipt(int index) {
+    return receipts.value[index];
+  }
+
   @override
   bool updateShouldNotify(covariant InheritedWidget oldWidget) {
     return true; // alway update ui

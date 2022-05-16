@@ -18,12 +18,10 @@ class ReceiptList extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ValueListenableBuilder(
-        valueListenable: GlobalScope.of(context)!.receipts,
+        valueListenable: GlobalScope.of(context)!.getReceipts(),
         builder: (context, _, __) => Column(
           children: [
-            const Center(
-              child: ReceiptsFiltersBar(),
-            ),
+            const Center(),
 
             /// Display all of the users transactions
 
@@ -31,7 +29,7 @@ class ReceiptList extends StatelessWidget {
               child: ListView(
                 shrinkWrap: true,
                 children: GlobalScope.of(context)!
-                    .receipts
+                    .getReceipts()
                     .value
                     .asMap()
                     .entries
