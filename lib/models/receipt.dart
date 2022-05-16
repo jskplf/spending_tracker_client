@@ -36,6 +36,7 @@ class ReceiptModel extends ChangeNotifier {
         address = json['address'],
         date = json['date'],
         total = json['total'],
+        category = json['category'],
         rawText = json['raw_text'];
 
   Map<String, dynamic> toJson() => {

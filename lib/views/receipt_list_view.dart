@@ -80,14 +80,14 @@ class ReadableTile extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: ListTile(
-              title: Readable(text: receipt.value.store ?? 'Missing Store'),
+              title: Readable.text(receipt.value.store ?? 'Missing Store'),
               subtitle:
-                  Readable(text: receipt.value.category ?? 'Missing Category'),
+                  Readable.text(receipt.value.category ?? 'Missing Category'),
               trailing: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Readable(text: receipt.value.total ?? 'Missing Subtotal'),
-                  Readable(text: receipt.value.date ?? 'Missing Date'),
+                  Readable.text(receipt.value.total ?? 'Missing Subtotal'),
+                  Readable.text(receipt.value.date ?? 'Missing Date'),
                 ],
               ),
               onTap: () {
@@ -128,21 +128,21 @@ class _ReceiptsFiltersBarState extends State<ReceiptsFiltersBar> {
           onPressed: () {
             currentFilter.value = 0;
           },
-          child: const Readable(
-            text: 'Last Month',
+          child: Readable.text(
+            'Last Month',
           ),
         ),
         OutlinedButton(
           onPressed: () {
             currentFilter.value = 1;
           },
-          child: const Readable(text: 'Expenses'),
+          child: Readable.text('Expenses'),
         ),
         OutlinedButton(
           onPressed: () {
             currentFilter.value = 2;
           },
-          child: const Readable(text: 'Income'),
+          child: Readable.text('Income'),
         ),
       ],
     );
@@ -156,9 +156,10 @@ class ReceiptListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            title: const Readable(
-          text: 'My Receipts',
-        )),
+            automaticallyImplyLeading: false,
+            title: Readable.text(
+              'My Receipts',
+            )),
         bottomNavigationBar: CustomNavBar(),
         body: ReceiptList());
   }

@@ -30,6 +30,7 @@ class ReceiptView extends StatelessWidget {
       ),
       bottomNavigationBar: CustomNavBar(),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text('Edit Receipt'),
       ),
       body: Form(
@@ -200,10 +201,17 @@ class TotalField extends StatelessWidget {
         /// For Date
         child: TextFormField(
           validator: (value) {
-            var re = RegExp(r'\d*. ?\d\d');
-
-            if (re.hasMatch(value ?? "")) {
-              return null;
+            var re = RegExp(r'\d+\. ?\d\d\D?');
+            var re2 = RegExp(r'[a-z]*[A-z]');
+            if (re2.hasMatch(value!)) {
+              return 'Error: Total cannot have any letters';
+            } else if (re.hasMatch(value)) {
+              if (re.hasMatch(value)) {
+                print(re.firstMatch(value));
+                // if (== value) {
+                return null;
+                // }
+              }
             } else {
               return 'Error: Invalid value for Total';
             }

@@ -16,17 +16,30 @@ class Readable extends StatelessWidget {
   /// 2. TODO This object will flash for a secon when it begins reading its message
 
   const Readable({
+    required this.child,
     Key? key,
     required this.text,
   }) : super(key: key);
   final String text;
+  final Widget child;
+  static ValueNotifier<Color> color = ValueNotifier(Colors.transparent);
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      child: Text(text),
+      child: AnimatedBuilder(
+        animation: color,
+        builder: (_, __) => Container(
+          child: child,
+          color: Colors.transparent,
+        ),
+      ),
       onLongPress: () async {
-        await speak(text);
+        color.value = Colors.blue;
+        speak(text).then((_) => color.value = Colors.transparent);
       },
     );
   }
+
+  /// Create a readable item that has text that is visible to the the user
+  factory Readable.text(text) => Readable(child: Text(text), text: text);
 }

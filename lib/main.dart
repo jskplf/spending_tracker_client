@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
     return GlobalScope(
       MaterialApp(
         title: 'SpendingTrackerFlutter',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
