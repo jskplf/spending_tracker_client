@@ -9,9 +9,6 @@ import 'package:get_storage/get_storage.dart';
 void main() async {
   /// Create a global list of receipts
   await GetStorage.init();
-
-  print(
-      GetStorage().read('receipts').map((e) => ReceiptModel.fromJson(e).store));
   runApp(const MyApp());
 }
 

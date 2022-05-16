@@ -48,7 +48,7 @@ class LoadImageButton extends StatelessWidget {
                     } else if (snapshot.hasData) {
                       // Extracting data from snapshot object
                       final data = snapshot.data;
-
+                      GlobalScope.of(context)!.receipts.value[index] = data;
                       return Center(
                         child: ReceiptView(
                             index:
