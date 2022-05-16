@@ -48,10 +48,12 @@ class LoadImageButton extends StatelessWidget {
                     } else if (snapshot.hasData) {
                       // Extracting data from snapshot object
                       final data = snapshot.data;
-                      GlobalScope.of(context)!.editReceipt(index, data);
+
                       return Center(
                         child: ReceiptView(
-                            index: GlobalScope.of(context)!.length - 1),
+                            index:
+                                GlobalScope.of(context)!.receipts.value.length -
+                                    1),
                       );
                     }
                   }

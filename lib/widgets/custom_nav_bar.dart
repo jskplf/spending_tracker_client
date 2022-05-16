@@ -17,14 +17,14 @@ class CustomNavBar extends StatelessWidget {
           currentScreen.value = value;
           if (currentScreen.value == pre) {
           } else if (currentScreen.value == 0) {
-            Navigator.pushReplacement(
+            Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const ChartView(),
+                builder: (context) => const ChartsView(),
               ),
             );
           } else if (currentScreen.value == 1) {
-            Navigator.pushReplacement(
+            Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => ReceiptListView(),
@@ -33,7 +33,7 @@ class CustomNavBar extends StatelessWidget {
           } else if (currentScreen.value == 2) {
             GlobalScope.of(context)!.receipts.value.add(ReceiptModel());
 
-            Navigator.pushReplacement(
+            Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => ReceiptView(
