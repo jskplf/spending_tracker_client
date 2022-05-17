@@ -49,7 +49,7 @@ class GlobalScope extends InheritedWidget {
 
   final ValueNotifier<List<ReceiptModel>> receipts = ValueNotifier(
     GetStorage().read('receipts') == null
-        ? [] as List<ReceiptModel>
+        ? []
         : GetStorage()
             .read('receipts')
             .map<ReceiptModel>((e) => ReceiptModel.fromJson(e))
@@ -61,7 +61,10 @@ class GlobalScope extends InheritedWidget {
   }
 
   ReceiptModel getReceipt(int index) {
-    return receipts.value[index];
+    if (receipts.value.isNotEmpty && receipts.value.length - 1 >= index) {
+      return receipts.value[index];
+    }
+    throw RangeError('$index : ${receipts.value.length}');
   }
 
   void saveReceipts() {
@@ -69,9 +72,20 @@ class GlobalScope extends InheritedWidget {
         .write('receipts', receipts.value.map((e) => e.toJson()).toList());
   }
 
+  get length {
+    return receipts.value.length;
+  }
+
   void deleteReceipt(int index) {
-    receipts.value.removeAt(index);
-    saveReceipts();
+    try {
+      receipts.value.removeAt(index);
+      saveReceipts();
+    } catch (e) {
+      throw IndexError(
+        index,
+        receipts.value,
+      );
+    }
   }
 
   ValueNotifier<List<ReceiptModel>> getFilteredReceipts() {
@@ -144,6 +158,23 @@ class GlobalScope extends InheritedWidget {
       x.add(ColumnCartData(x: key, y: value));
     });
     return [x, max, interval];
+  }
+
+  /// Add a new receipt to local storage
+  ///
+  void addReceipt(ReceiptModel receipt) {
+    receipts.value.add(ReceiptModel());
+    saveReceipts();
+  }
+
+  /// Replace an existing receipt with a new one at the specified index
+  /// throws an index error if the receipt list is currently empty
+  void editReceipt(int index, ReceiptModel receipt) {
+    if (receipts.value.isEmpty) {
+      throw IndexError(index, receipts);
+    }
+    receipts.value[index] = receipt;
+    saveReceipts();
   }
 
   dynamic toStoreChart() {

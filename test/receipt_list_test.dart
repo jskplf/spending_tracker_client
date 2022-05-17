@@ -1,82 +1,109 @@
-// // /// tests to check if the receipt list view is working correctly
-// // /// 1. check if list has the correct number of elements
-// // /// 2. check if each tile has the correct values
-// // /// 3. check if each tile navigates to the correct receipt view when tapped
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:spending_tracker/main.dart';
+import 'package:spending_tracker/models/receipt.dart';
 
-// // import 'dart:math';
+void resetMockGS(mockGlobalScope) {
+  /// Creates a Global Scope identical to a fresh install
+  for (int i = 0; i < mockGlobalScope.length; i++) {
+    mockGlobalScope.deleteReceipt(i);
+  }
 
-// // import 'package:flutter/material.dart';
-// // import 'package:flutter_test/flutter_test.dart';
-// // import 'package:spending_tracker/models/receipt.dart';
-// // import 'package:spending_tracker/views/views.dart';
+  assert(mockGlobalScope.getReceipts().value.isEmpty);
+}
 
-// // /// Global array of receipts that will update when altered(both adding to list and editing individual elements of the list)
-// // ValueNotifier<List> receipts =
-// //     ValueNotifier([ReceiptModel(), ReceiptModel(), ReceiptModel()]);
+void mockLoadGS(mockGlobalScope) {
+  resetMockGS(mockGlobalScope);
+  var fakeData = [
+    ReceiptModel(
+      store: 'Mock Store 1',
+      address: 'NY 11111',
+      date: '10/10/10',
+      category: 'Mock Cat 1',
+      total: '15.00',
+    ),
+    ReceiptModel(
+      store: 'Mock Store 2',
+      address: 'NY 11112',
+      date: '10/10/11',
+      category: 'Mock Cat 3',
+      total: '15.00',
+    ),
+    ReceiptModel(
+      store: 'Mock Store 3',
+      address: 'NY 11113',
+      date: '10/10/09',
+      category: 'Mock Cat 3',
+      total: '15.00',
+    ),
+  ];
+  for (var element in fakeData) {
+    mockGlobalScope.addReceipt(element);
+  }
+}
 
-// void main() {
-//   group('Receipt List view Test', () {
-//     testWidgets('ReceiptModel ListenerBuilder test ',
-//         (WidgetTester tester) async {
-//       ///  Create a widget that updates whenever the store names value changes
-//       await tester.pumpWidget(MaterialApp(
-//         home: AnimatedBuilder(
-//             animation: receipts,
-//             builder: (context, child) {
-//               return Scaffold(body: ReceiptList());
-//             }),
-//       ));
+void main() async {
+  final mockGlobalScope = GlobalScope(Container());
+  // await GetStorage.init();
 
-// //       /// Change store name and look for the new name
-// //       receipts.value[0].setStore('new store name');
-// //       receipts.notifyListeners();
-// //       await tester.pumpAndSettle();
+  /// Create a fake instance of the application runtime
+  /// 1. Test that user can add, delete, and view receipts
+  ///   input - Empty list
+  ///   output - read -> empty List, delete -> error, add -> nothing
+  ///
+  ///   input - list with one item
+  ///   output - read -> list containing item, delete -> nothing(zero items), add-> nothing
+  group('Load receipts from local storage, test adding, editing and deleting',
+      () {
+    /// Initialize the receipts value in global scope to an empty list to mock a fresh install
+    testWidgets('View,Add,Edit,Delete receipts when there are no receipts',
+        (WidgetTester tester) async {
+      /// Start with no receipts and see if the app can handle it
+      resetMockGS(mockGlobalScope);
+      await tester.pumpWidget(
+        Material(
+          child: mockGlobalScope,
+        ),
+        const Duration(seconds: 1),
+      );
+      final BuildContext context = tester.element(find.byType(GlobalScope));
 
-// //       /// give the ui a second to update
-// //       expect(find.text('new store name'), findsOneWidget);
+      // expect(GlobalScope.of(context)!.getReceipts(), returnsNormally);
+      expect(GlobalScope.of(context)!.getReceipts().value, [],
+          reason: 'Fresh install starts with empty an empty database');
 
-// //       /// Change value again, verify that the old name is gone
-// //       /// verify the new name is shown
-// //       receipts.value[0].setStore('Another new name');
-// //       receipts.notifyListeners();
-// //       await tester.pumpAndSettle();
-// //       // expect(find.text('new store name'), findsNothing);
-// //       expect(find.text('Another new name'), findsOneWidget);
-// //     });
+      expect(() => GlobalScope.of(context)!.getReceipt(0), isRangeError);
 
-// <<<<<<< HEAD
-// //     testWidgets('Add a receipt to the list of receipts',
-// //         (WidgetTester tester) async {
-// //       await tester.pumpWidget(MaterialApp(
-// //         home: AnimatedBuilder(
-// //             animation: receipts,
-// //             builder: (context, child) {
-// //               return Scaffold(body: ReceiptList(r: receipts.value));
-// //             }),
-// //       ));
-// //       receipts.value.add(ReceiptModel(store: 'Added this afterwards'));
-// //       receipts.notifyListeners();
-// //       await tester.pumpAndSettle();
-// =======
-//     testWidgets('Add a receipt to the list of receipts',
-//         (WidgetTester tester) async {
-//       await tester.pumpWidget(MaterialApp(
-//         home: AnimatedBuilder(
-//             animation: receipts,
-//             builder: (context, child) {
-//               return Scaffold(body: ReceiptList());
-//             }),
-//       ));
-//       receipts.value.add(ReceiptModel(store: 'Added this afterwards'));
-//       receipts.notifyListeners();
-//       await tester.pumpAndSettle();
-// >>>>>>> dev
+      expect(() => GlobalScope.of(context)!.deleteReceipt(0),
+          throwsA(TypeMatcher<IndexError>()),
+          reason: 'There are no receipts for the user to delete');
+      // Add a receipt
+      expect(() => GlobalScope.of(context)!.addReceipt(ReceiptModel.empty()),
+          returnsNormally);
 
-// //       /// Check to see that a new tile was created and it contains the correct
-// //       /// text
-// //       expect(find.text('Added this afterwards'), findsOneWidget);
-// //       expect(receipts.value.length == 4, true);
-// //       expect(find.byType(ReadableTile), findsNWidgets(4));
-// //     });
-// //   });
-// // }
+      expect(() => GlobalScope.of(context)!.getReceipt(0), returnsNormally);
+
+      // Check if the list of receipts has grown by one
+      expect(GlobalScope.of(context)!.receipts.value.length, 1);
+
+      mockLoadGS(mockGlobalScope);
+      expect(GlobalScope.of(context)!.length, 3);
+
+      /// Mock loading a previously used version of the app
+      await tester.pumpWidget(
+          Material(
+            child: mockGlobalScope,
+          ),
+          const Duration(seconds: 1));
+
+      expect(GlobalScope.of(context)!.length, 3);
+
+      expect(
+          () => GlobalScope.of(context)!
+              .editReceipt(0, ReceiptModel(store: 'Mock Store 4')),
+          returnsNormally);
+      expect(GlobalScope.of(context)!.getReceipt(0).store, 'Mock Store 4');
+    });
+  });
+}

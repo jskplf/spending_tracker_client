@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:spending_tracker/main.dart';
 import 'package:spending_tracker/views/image_loader_view.dart';
+import 'package:spending_tracker/views/receipt_list_view.dart';
 import 'package:spending_tracker/widgets/widgets.dart';
 
 class ReceiptView extends StatelessWidget {
@@ -178,8 +179,13 @@ class SaveReceiptButton extends StatelessWidget {
           data.date = dateController.text;
           data.total = totalController.text;
           GlobalScope.of(context)!.saveReceipts();
-          Navigator.pushReplacementNamed(context, '/receipts');
-          Navigator.popAndPushNamed(context, '/receipts');
+          CustomNavBar.currentScreen.value = 1;
+          Navigator.push(
+              context,
+              PageRouteBuilder(
+                  transitionDuration: const Duration(seconds: 0),
+                  pageBuilder: ((context, animation, secondaryAnimation) =>
+                      const ReceiptListView())));
         }
       },
       child: Text('Save'),
@@ -202,7 +208,13 @@ class DeleteReceiptButton extends StatelessWidget {
           ElevatedButton.styleFrom(primary: Color.fromARGB(255, 250, 82, 70)),
       onPressed: () {
         GlobalScope.of(context)!.deleteReceipt(index);
-        Navigator.popAndPushNamed(context, '/receipts');
+        CustomNavBar.currentScreen.value = 1;
+        Navigator.push(
+            context,
+            PageRouteBuilder(
+                transitionDuration: const Duration(seconds: 0),
+                pageBuilder: ((context, animation, secondaryAnimation) =>
+                    const ReceiptListView())));
       },
       child: const Text('Delete'),
     );

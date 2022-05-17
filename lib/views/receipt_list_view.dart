@@ -91,8 +91,9 @@ class ReadableTile extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => ReceiptView(
+                  PageRouteBuilder(
+                    transitionDuration: Duration(seconds: 0),
+                    pageBuilder: (context, _, __) => ReceiptView(
                       index: receipt.key,
                     ),
                   ),

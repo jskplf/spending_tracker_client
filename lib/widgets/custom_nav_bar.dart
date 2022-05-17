@@ -3,9 +3,8 @@ import 'package:spending_tracker/main.dart';
 import 'package:spending_tracker/models/receipt.dart';
 import 'package:spending_tracker/views/views.dart';
 
-ValueNotifier<int> currentScreen = ValueNotifier(1);
-
 class CustomNavBar extends StatelessWidget {
+  static ValueNotifier<int> currentScreen = ValueNotifier(1);
   const CustomNavBar({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -19,27 +18,30 @@ class CustomNavBar extends StatelessWidget {
           } else if (currentScreen.value == 0) {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) => const ChartsView(),
+              PageRouteBuilder(
+                transitionDuration: Duration(microseconds: 0),
+                pageBuilder: (context, _, __) => const ChartsView(),
               ),
             );
           } else if (currentScreen.value == 1) {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) => ReceiptListView(),
+              PageRouteBuilder(
+                transitionDuration: Duration(microseconds: 0),
+                pageBuilder: (context, _, __) => const ReceiptListView(),
               ),
             );
           } else if (currentScreen.value == 2) {
+            /// Fix THIS
             GlobalScope.of(context)!.receipts.value.add(ReceiptModel());
-
             Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ReceiptView(
-                    index: GlobalScope.of(context)!.receipts.value.length - 1),
-              ),
-            );
+                context,
+                PageRouteBuilder(
+                  transitionDuration: Duration(microseconds: 0),
+                  pageBuilder: (context, _, __) => ReceiptView(
+                    index: GlobalScope.of(context)!.receipts.value.length - 1,
+                  ),
+                ));
           }
         }),
         currentIndex: currentScreen.value,
