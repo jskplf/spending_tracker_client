@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:spending_tracker/date_utils.dart';
 import './views/views.dart';
 import 'models/receipt.dart';
 import 'package:get_storage/get_storage.dart';
@@ -89,39 +90,8 @@ class GlobalScope extends InheritedWidget {
   }
 
   ValueNotifier<List<ReceiptModel>> getFilteredReceipts() {
-    /// Return a list of receipts filtered by the dates that the user has
-    /// entered
-    return ValueNotifier(receipts.value.where((element) {
-      String d = element.date;
-
-      String start = ColumnGraphWidget.startDate.value;
-      if (start == "") {
-        return true;
-      }
-      List startSplit = start.split('/');
-      List dSplit = d.split('/');
-      startSplit = startSplit.map((e) => int.parse(e)).toList();
-      dSplit = dSplit.map((e) => int.parse(e)).toList();
-      if (dSplit[2] < startSplit[2]) {
-        return false;
-      } else if (dSplit[1] < startSplit[1]) {
-        return false;
-      } else if (dSplit[0] < startSplit[0]) {
-        return false;
-      }
-
-      String end = ColumnGraphWidget.endDate.value;
-      List endSplit = end.split('/');
-      endSplit = endSplit.map((e) => int.parse(e)).toList();
-      if (dSplit[2] > endSplit[2]) {
-        return false;
-      } else if (dSplit[0] > endSplit[0]) {
-        return false;
-      } else if (dSplit[1] > endSplit[1]) {
-        return false;
-      }
-      return true;
-    }).toList());
+    return ValueNotifier(filterByDates(ColumnGraphWidget.startDate.value,
+        ColumnGraphWidget.endDate.value, receipts.value));
   }
 
   @override
@@ -131,7 +101,12 @@ class GlobalScope extends InheritedWidget {
 
   /// Functions for generating graphs from the current receipts data
   dynamic toCategoryChart() {
-    var filtered = getFilteredReceipts().value;
+    var filtered;
+    try {
+      filtered = getFilteredReceipts().value;
+    } catch (e) {
+      return [[], 100, 10];
+    }
     dynamic names = filtered.map((e) => e.category).toList();
     names = names.toSet();
     if (names.isEmpty) {

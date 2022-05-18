@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:spending_tracker/main.dart';
-import 'package:spending_tracker/views/image_loader_view.dart';
+import 'package:spending_tracker/widgets/load_image_button.dart';
 import 'package:spending_tracker/views/receipt_list_view.dart';
 import 'package:spending_tracker/widgets/widgets.dart';
 

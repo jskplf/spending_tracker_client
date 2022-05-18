@@ -1,12 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:spending_tracker/date_utils.dart';
+import 'package:spending_tracker/models/receipt.dart';
 
 void main() {
   group('Filter dates', () {
-    DateTime startDate = fromString('12/30/10');
-    DateTime endDate = fromString('01/01/20');
-
     test('Try valid dates', () {
-      expect(startDate.isBefore(endDate), true);
+      var x = fromString('10/11/12');
+      expect(x.month, 10);
+      expect(x.day, 11);
+      expect(x.year, 12);
     });
 
     test('Try to convert a date that is empty', () {
@@ -18,27 +20,36 @@ void main() {
       expect(() {
         fromString('odkoksofk');
       }, throwsAssertionError);
-      expect(() {
-        fromString('odk/gjfso/fsdf');
-      }, throwsA(TypeMatcher<FormatException>));
-      expect(() {
-        fromString('100/100/100');
-      }, throwsFormatException);
+      expect(() => fromString('odk/gjfso/fsdf'), throwsAssertionError);
+      expect(() => fromString('100/100/100'), throwsAssertionError);
+      expect(() => fromString('100/aaa/100'), throwsAssertionError);
     });
   });
-}
 
-DateTime fromString(String date) {
-  assert(date.split('/').length == 3);
-  dynamic s = date.split('/').map((e) {
-    var x = int.tryParse(e);
-    if (x == null) {
-      throw FormatException;
-    } else {
-      return x;
-    }
-  }).toList();
-  assert(s.length == 3);
+  test('Filter a list of receipts with good data', () {
+    String startDate = '10/10/01';
+    String endDate = '10/10/20';
+    List<ReceiptModel> x = [
+      ReceiptModel(date: '10/10/01'),
+      ReceiptModel(date: '9/01/00'),
+    ];
+    expect(() => filterByDates(startDate, endDate, x), returnsNormally);
+    expect(filterByDates(startDate, endDate, x).length, 1);
+  });
 
-  return DateTime(s[2], s[1], s[0]);
+  test('Try to filter an empty list of receipts', () {
+    String startDate = '10/10/01';
+    String endDate = '10/10/20';
+    List<ReceiptModel> x = [];
+    expect(() => filterByDates(startDate, endDate, x), throwsAssertionError);
+  });
+  test('Try to filter a list with receipts where dates are invalid', () {
+    String startDate = '10/10/01';
+    String endDate = '10/10/20';
+    List<ReceiptModel> x = [
+      ReceiptModel(date: '10/10/01'),
+      ReceiptModel(),
+    ];
+    expect(filterByDates(startDate, endDate, x).length, 1);
+  });
 }

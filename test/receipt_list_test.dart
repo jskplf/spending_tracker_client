@@ -73,7 +73,8 @@ void main() async {
       expect(GlobalScope.of(context)!.getReceipts().value, [],
           reason: 'Fresh install starts with empty an empty database');
 
-      expect(() => GlobalScope.of(context)!.getReceipt(0), isRangeError);
+      expect(() => GlobalScope.of(context)!.getReceipt(0),
+          throwsA(isA<RangeError>()));
 
       expect(() => GlobalScope.of(context)!.deleteReceipt(0),
           throwsA(TypeMatcher<IndexError>()),

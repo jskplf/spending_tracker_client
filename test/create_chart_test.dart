@@ -17,8 +17,6 @@ void main() async {
       final BuildContext context = tester.element(find.byType(GlobalScope));
 
       assert(GlobalScope.of(context)!.getReceipts().value.isEmpty);
-
-      expect(true, true);
     });
   });
 }

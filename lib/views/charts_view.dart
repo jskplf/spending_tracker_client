@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:spending_tracker/date_utils.dart';
 import 'package:spending_tracker/main.dart';
 import 'package:spending_tracker/models/receipt.dart';
 import 'package:spending_tracker/views/receipt_view.dart';
@@ -48,7 +50,31 @@ class ChartsView extends StatelessWidget {
                       const GraphDropDown(),
                       SizedBox(
                           width: 200,
-                          child: DateField(dateController: startDate)),
+                          child: TextFormField(
+                            controller: startDate,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'[\d////]'),
+                                  replacementString: ''),
+                            ],
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return null;
+                              }
+
+                              if (value.length == 8 &&
+                                  value.split('/').length == 3) {
+                                return null;
+                              }
+
+                              try {
+                                fromString(value);
+                                return null;
+                              } catch (e) {
+                                return 'Error: Invalid start date';
+                              }
+                            },
+                          )),
                       SizedBox(
                           width: 200,
                           child: DateField(dateController: endDate)),
@@ -111,8 +137,6 @@ class ColumnGraphWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<ReceiptModel> receipts = GlobalScope.of(context)!.receipts.value;
-
     dynamic tempData;
     if (chartData.value == 0) {
       tempData = GlobalScope.of(context)!.toStoreChart();
